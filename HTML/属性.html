@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML 标签属性大汇总</title>
+
+    <style>
+        html {
+            scroll-behavior: smooth; /* 让页面所有的锚点跳转都变成平滑滚动，而不是瞬间闪现 */
+        }
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; }
+        section { margin-bottom: 500px; } /* 增加间距，方便测试平滑滚动效果 */
+    </style>
+</head>
+
+<body>
+
+    <header id="top-anchor">
+        <h1>HTML 核心属性实战演练</h1>
+        <nav>
+            <ul>
+                <li><a href="#image-section">跳转到图片区</a></li>
+                <li><a href="#media-section">跳转到音视频区</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="text-section">
+            <h2>1. 文本相关属性</h2>
+            <p>
+                访问 <a href="https://www.baidu.com" target="_blank" title="点击前往百度搜索">搜索引擎</a> 
+                进行学习。
+            </p>
+        </section>
+
+        <section id="image-section">
+            <h2>2. 图片属性</h2>
