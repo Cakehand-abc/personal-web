@@ -1,113 +1,135 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-    <head>
-        <meta charset="UTF-8">
-        <title>X的观测枢纽 - 极光纪元</title>
-    </head>
-    <body>
-        <header id="top">
-            <h1>X的观测枢纽 - 极光纪元</h1>
-        </header>
 
-        <nav>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+    <header id="top">
+        <h1>X的观测枢纽 - 极光纪元</h1>
+        <nav id="navbar">
             <ul>
                 <li><a href="#about">关于站长</a></li>
                 <li><a href="#archive">观测档案</a></li>
                 <li><a href="#terminal">终端通讯</a></li>
             </ul>
         </nav>
+    </header>
 
-        <main>
-            <section id="about">
-                <div>
-                    <h2>关于站长</h2>
-                </div>
-                <div>
-                    <p>欢迎来到<strong>我的个人观测枢纽</strong>！这里是我记录二次元日常、存放追番清单的<span>秘密基地</span>。</p>
-                </div>
-                <div>
-                    <p>
-                        虽然现在这里只是素颜状态，但未来它将披上充满未来感的<span>极光</span>（Aurora）外衣，拥有全息毛玻璃和炫酷的渐变光影！
-                    </p>
-                </div>
+    <main>
+        <section id="about">
+            <h2>关于站长</h2>
+            <div class="card">
+                <p>欢迎来到<strong>我的个人观测枢纽</strong>！这里是我记录二次元日常、存放追番清单的<span>秘密基地</span>。</p>
+                <p>虽然现在这里只是素颜状态，但未来它将披上充满未来感的<span>极光（Aurora）</span>外衣，拥有全息毛玻璃和炫酷的渐变光影！</p>
                 <a href="https://github.com/Cakehand-abc/personal-web" target="_blank">前往我的 GitHub 仓库</a>
-            </section>
+            </div>
+        </section>
 
-            <section id="archive">
-                <div>
-                    <h2 title="番剧与多媒体区">观测档案</h2>
-                </div>
+        <section id="archive">
+            <h2 title="番剧与多媒体区">观测档案</h2>
 
-                <div id="anime-card-1">
-                    <h3>本季神作清单</h3>
-                    <img src="./img/123.jpg" alt="动漫封面" loading="lazy">
-                    <video src="./暂无视频提供" controls loop muted autoplay poster="./img/123.jpg"></video>
-                    
-                    <div>
-                        <ol>
-                            <li>葬送的芙莉莲</li>
-                            <li>迷宫饭</li>
-                            <li>86-不存在的战区-</li>
-                        </ol>
-                    </div>
+            <div class="card anime-card">
+                <h3>本季神作清单</h3>
 
-                    <div>
-                        <h3>设定集解释</h3>
-                        <dl>
-                            <dt>名词：勇者小队</dt>
-                            <dd>解释：辛美尔、海塔、艾冉和芙莉莲组成的传奇队伍。</dd>
-                            
-                            <dt>名词：魔法使</dt>
-                            <dd>解释：通过解析原理来施展魔法的特殊职业。</dd>
-                        </dl>
-                    </div>
-                </div>
-            </section>
+                <img src="./img/123.jpg" alt="动漫封面" loading="lazy" width="300">
+                <video src="./media/op.mp4" controls poster="./media/poster.jpg" width="300"></video>
 
-            <section id="terminal">
-                <div>
-                    <h2 title="表格与表单区">终端通讯</h2>
-                </div>
-                
-                <div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>番剧名称</th>
-                                <th>当前状态</th>
-                                <th>期待评级</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>无职转生</td>
-                                <td>连载中</td>
-                                <td>满分推荐</td>
-                            </tr>
-                            <tr>
-                                <td>迷宫饭</td>
-                                <td>已完结</td>
-                                <td>绝对神作</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <ol>
+                    <li>葬送的芙莉莲</li>
+                    <li>迷宫饭</li>
+                    <li>86-不存在的战区-</li>
+                </ol>
 
-                <div>
-                    <form>
-                        <ul>
-                            <li>昵称：<input type="text" placeholder="请输入你的二次元 ID..."></li>
-                            <li>留言：<textarea rows="3" cols="25" placeholder="在此输入跨越时空的留言..."></textarea></li>
-                        </ul>
-                        <button type="button">发送电波</button>
-                    </form>
-                </div>
-            </section>
-        </main>
+                <h3>设定集解释</h3>
+                <dl>
+                    <dt>名词：勇者小队</dt>
+                    <dd>解释：辛美尔、海塔、艾冉和芙莉莲组成的传奇队伍。</dd>
 
-        <footer>
-            <p>&copy; 2026 X的观测枢纽. 等待极光降临.</p>
-            <a href="#top">返回顶部</a>
-        </footer>
-    </body>
+                    <dt>名词：魔法使</dt>
+                    <dd>解释：通过解析原理来施展魔法的特殊职业。</dd>
+                </dl>
+            </div>
+        </section>
+
+        <section id="terminal">
+            <h2 title="表格与表单区">终端通讯</h2>
+
+            <div class="card">
+                <h3>追番状态监控</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>番剧名称</th>
+                            <th>当前状态</th>
+                            <th>期待评级</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>无职转生</td>
+                            <td>连载中</td>
+                            <td>满分推荐</td>
+                        </tr>
+                        <tr>
+                            <td>迷宫饭</td>
+                            <td>已完结</td>
+                            <td>绝对神作</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>发送跨越时空的电波</h3>
+                <form>
+                    <ul>
+                        <li>
+                            <label for="nickname">昵称：</label>
+                            <input type="text" id="nickname" placeholder="请输入你的二次元 ID...">
+                        </li>
+                        <li>
+                            <label for="message">留言：</label>
+                            <textarea id="message" rows="3" cols="25" placeholder="在此输入跨越时空的留言..."></textarea>
+                        </li>
+                    </ul>
+                    <button type="button">发送电波</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer id="footer">
+        <p>&copy; 2026 X的观测枢纽. 等待极光降临.</p>
+        <a href="#top">返回顶部</a>
+    </footer>
+
+    <script>
+        // 1. 先把原本正常的网页标题保存下来
+        let normalTitle = document.title;
+
+        // 2. 给网页装上“标签页切换”的监听器
+        document.addEventListener('visibilitychange', function () {
+            // 3. 判断：如果用户切走了（页面隐藏了）
+            if (document.hidden) {
+                document.title = '(つェ⊂) 哎呀，你跑到哪里去了！';
+            }
+            // 4. 判断：如果用户切回来了（页面可见了）
+            else {
+                document.title = '(*´∇｀*) 欢迎回到极光枢纽！';
+                // 留个小心机：显示 2 秒钟欢迎语后，自动变回原本的标题
+                setTimeout(function () {
+                    document.title = normalTitle;
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</body>
+
 </html>
