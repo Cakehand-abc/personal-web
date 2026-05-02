@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>淘宝网格布局 - 纯净探索版</title>
+    <style>
+        /* ================= 基础初始化 ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ================= 你的探索舞台 ================= */
+        
+        /* 1. 父盒子：用来限制最大宽度，加了明显的红色边框作为参照物 */
+        .wrapper {
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        /* 2. 行盒子：弹性布局的容器 */
+        .tb-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: -8px;
+            margin-right: -8px;
+            /* border: 2px solid #e06c75; */
+            /* 提示：负 margin 可以在这里加着试试 */
+        }
+
+        /* 3. 列盒子：严格按照 1/6 比例划分 */
+        .tb-col {
+            flex: 0 0 16.666666%;
+            margin-bottom: 20px;
+            padding: 0 8px;
+            height:120px
+            /* 提示：padding 和 margin-bottom 可以在这里加着试试 */
+        }
+
+        /* 4. 实际内容卡片：加上了边框方便你区分边界 */
+        .tb-card {
+            background-color: pink;
+            height: 100%;
+            /* border: 1px solid #fff; 白色边框让你看清它们现在是紧贴的 */
+        }
+
+        .footer{
+            background-color: black;
+            width: 80%;
+            height: 100px;
+            margin: 20px auto;
+
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="tb-row">
+            <div class="tb-col">
+                <div class="tb-card">01</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">02</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">03</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">04</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">05</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">06</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">07</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">08</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">09</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">10</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">11</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">12</div>
+            </div> 
+            <div class="tb-col">
+                <div class="tb-card">13</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">14</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">15</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">16</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">17</div>
+            </div>
+            <div class="tb-col">
+                <div class="tb-card">18</div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer"></footer>
+
+</body>
+</html>

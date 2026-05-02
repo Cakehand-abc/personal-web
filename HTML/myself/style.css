@@ -1,0 +1,102 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+strong {
+    font-weight: 900;
+    color: #2dd4bf;
+}
+
+body {
+    background-color: #f4f4f5;
+    color: #333;
+    padding: 20px;
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    line-height: 1.6;
+}
+
+#top h1 {
+    text-align: center;
+    letter-spacing: 2px;
+    font-size: 28px;
+}
+
+.article-content {
+    text-indent: 2em;
+    text-align: justify;
+}
+
+.article-meta {
+    font-size: 14px;
+    font-style: italic;
+}
+
+#navbar {
+    background-color: #e4e4e7;
+    padding: 15px;
+}
+
+/* .imgvideo{
+    border-radius: 12px;
+    overflow: hidden;
+} */
+
+img, 
+video {
+    border-radius: 12px;
+}
+
+/* 优化：限制卡片最大宽度并居中，为后续盒子模型测试做准备 */
+.card {
+    background-color: #ffffff;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto 20px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+}
+
+#navbar a {
+    text-decoration: none;
+    color: #1e293b;
+}
+
+#navbar a:hover {
+    color: #2dd4bf;
+    /* 暂时注释掉字体放大，避免导航栏抖动 */
+    /* font-size: 18px; */
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #f8fafc;
+}
+
+tbody tr:hover {
+    background-color: #e2e8f0;
+}
+
+/* 优化：使用分组选择器合并代码，并修复 border 写法 */
+input[type="text"]:focus,
+textarea:focus {
+    outline: none;
+    border: 2px solid #3b82f6;
+    border-radius: 4px;
+}
+
+button {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    background-color: #2dd4bf;
+    color: #fff;
+}
+
+ol li:first-child::after {
+    content: " 🔥霸权!";
+    color: red;
+}
+
+img+video {
+    margin-left: 15px;
+}
