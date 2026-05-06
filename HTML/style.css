@@ -1,0 +1,222 @@
+/* 定义主体内容通用样式 */
+body {
+    background-color: #f4f4f5;
+    color: #333;
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    line-height: 1.6;
+}
+
+/*  全局样式重置  */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 导航样式混合定位sticky  */
+#navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: #e4e4e7;
+    padding: 15px;
+    width: 100%;
+}
+
+.nav-list {
+    display: flex;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-list li {
+    flex: 1;
+    list-style: none;
+}
+
+/* 导航内锚点链接 */
+#navbar a {
+    text-decoration: none;
+    color: #1e293b;
+}
+
+#navbar a:hover {
+    color: #2dd4bf;
+}
+
+/* 关于站长立体样式 */
+.hologram-wrapper{
+    width: 300px;
+    height: 200px;
+    margin: 0 auto;
+    background-color: #2dd4bf;
+    padding:10px;
+    perspective: 1000px;
+}
+
+.hologram-wrapper:hover{
+    cursor:crosshair;
+}
+
+.cyber-pass{
+    position:relative;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: all 0.4s ease;
+}
+
+.pass-front,
+.pass-back{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: translateZ(-1px);
+    background-color: orange;
+    border-radius: 10px;
+    backface-visibility: hidden;
+}
+
+.skew-btn{
+    backface-visibility: hidden;
+}
+
+.pass-back{
+    transform: rotateY(180deg);
+}
+
+.hologram-wrapper:hover .cyber-pass{
+    transform: rotateY(180deg) scale(1.05);
+}
+
+.skew-btn{
+    transform: skewX(-15deg);
+    transform-origin: left bottom;
+}
+
+/*  关于站长部分基础标签样式  */
+strong {
+    /* 加粗强调，并赋予极光主题亮绿色 */
+    font-weight: 900;
+    color: #2dd4bf;
+}
+
+/*  顶部标题与导航栏  */
+#top h1 {
+    text-align: center;
+    letter-spacing: 2px;
+    font-size: 28px;
+}
+
+/*  观测档案图片grid布局样式  */
+.anime-grid {
+    width: 599px;
+    display: grid;
+    position: relative;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 20px;
+    margin: 0 auto;
+}
+
+.bage{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    background-color: #2dd4bf;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.play-btn { 
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 5px 10px;
+
+}
+
+.anime-card{
+    justify-content: space-between;
+    
+}
+
+/*  观测档案段落排版样式  */
+.article-content {
+    text-indent: 2em;
+    text-align: justify;
+}
+
+.article-meta {
+    font-size: 14px;
+    font-style: italic;
+}
+
+/* 极客核心阵列布局 */
+.gear-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+/* 极客核心阵列内容盒子布局 */
+.gear-item {
+    flex: 0 0 calc(33.333333% - 20px);
+    background: linear-gradient(to right bottom, #e0f2fe, #f0fdf4);
+    transition: all .4s;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.gear-item:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/*  通用卡片组件,每个小版块通用样式  */
+.card {
+    background-color: #ffffff;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto 20px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+}
+
+/*  推荐番剧样式  */
+tbody tr:nth-child(odd) {
+    background-color: #f8fafc;
+}
+
+tbody tr:hover {
+    background-color: #e2e8f0;
+}
+
+/*  表单样式  */
+input[type="text"]:focus,
+textarea:focus {
+    outline: none;
+    border: 2px solid #3b82f6;
+    border-radius: 4px;
+}
+
+button {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    background-color: #2dd4bf;
+    color: #fff;
+}
+
+/*  列表特殊样式  */
+ol li:first-child::after {
+    content: " 🔥霸权!";
+    color: red;
+}
+
+.cyber-totop{
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+}

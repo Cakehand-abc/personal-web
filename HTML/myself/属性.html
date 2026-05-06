@@ -8,10 +8,21 @@
 
     <style>
         html {
-            scroll-behavior: smooth; /* 让页面所有的锚点跳转都变成平滑滚动，而不是瞬间闪现 */
+            scroll-behavior: smooth;
+            /* 让页面所有的锚点跳转都变成平滑滚动，而不是瞬间闪现 */
         }
-        body { font-family: sans-serif; line-height: 1.6; padding: 20px; }
-        section { margin-bottom: 500px; } /* 增加间距，方便测试平滑滚动效果 */
+
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        section {
+            margin-bottom: 500px;
+        }
+
+        /* 增加间距，方便测试平滑滚动效果 */
     </style>
 </head>
 
@@ -19,6 +30,7 @@
 
     <header id="top-anchor">
         <h1>HTML 核心属性实战演练</h1>
+
         <nav>
             <ul>
                 <li><a href="#image-section">跳转到图片区</a></li>
@@ -31,7 +43,7 @@
         <section id="text-section">
             <h2>1. 文本相关属性</h2>
             <p>
-                访问 <a href="https://www.baidu.com" target="_blank" title="点击前往百度搜索">搜索引擎</a> 
+                访问 <a href="https://www.baidu.com" target="_blank" title="点击前往百度搜索">搜索引擎</a>
                 进行学习。
             </p>
         </section>
