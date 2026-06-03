@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "./theme-variables.scss";
+
+/* 强制使用浅色主题 */
+body {
+  background-color: var(--background-primary);
+  color: var(--text-normal);
+  transition: var(--theme-transition);
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.theme-light {
+  /* 确保为纯白底色的浅色主题 */
+  --background-primary: #ffffff !important;
+  --background-secondary: #f9f9f9 !important;
+  --text-bright: #000000;
+  --text-normal: #333333;
+}
+
+/* 滚动渐显核心样式 (1.3s过渡，光影渲染) */
+.scroll-reveal-initial {
+  opacity: 0;
+  transform: translateY(60px);
+  transition: opacity 1.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 1.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 1.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: opacity, transform, box-shadow;
+}
+
+.scroll-reveal-visible {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* 修复 Element Plus 样式 */
+.el-button--primary {
+  background-color: var(--text-accent) !important;
+  border-color: var(--text-accent) !important;
+}
