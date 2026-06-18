@@ -42,9 +42,8 @@ onMounted(async () => {
   document.body.style.overflow = 'hidden'
   document.body.classList.add('theme-light') // 确保应用浅色主题
 
-  // 如果有上传媒体文件，展示时间拉长到 3 秒让大家欣赏
-  // 如果没上传（使用默认 CSS），就保持原来的 1.5 秒
-  const introDuration = settingStore.introMediaUrl ? 3000 : 1500
+  // 统一开场动画时间为 3 秒 (3000ms)，以配合全新的 SVG 流金动画节奏
+  const introDuration = 3000
 
   setTimeout(() => {
     showLogo.value = true
@@ -86,11 +85,17 @@ onUnmounted(() => {
       alt="Intro Image" 
     />
 
-    <!-- 3. 如果后台啥都没配，或者正在加载中，则使用兜底的纯 CSS 文字特效 -->
-    <div v-else class="logo-wrapper relative z-10" :class="{ 'fade-in': showLogo }">
+    <!-- 3. 如果后台设置了使用旧版“Welcome”动画（预留给未来的后台开关） -->
+    <div v-else-if="settingStore.useOldIntro" class="logo-wrapper relative z-10" :class="{ 'fade-in': showLogo }">
       <h1 class="anime-logo-text text-4xl md:text-6xl font-bold tracking-wider">
         Welcome To My Blog
       </h1>
+    </div>
+
+    <!-- 4. 默认兜底动画：全新的横向 SVG 流金岁月动画 -->
+    <div v-else class="svg-intro-wrapper absolute w-full h-full flex justify-center items-center">
+      <!-- 使用 object 引入，确保 SVG 内部的 CSS 动画能正常播放 -->
+      <object data="/gemini-svg-horizontal.svg?v=13" type="image/svg+xml" class="w-full max-w-4xl px-4 md:px-10"></object>
     </div>
   </div>
 

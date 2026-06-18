@@ -4,7 +4,7 @@
     <!-- 顶部 Logo 区域 (引入 public 下的 SVG) -->
     <div class="mb-12 w-full flex justify-center cursor-pointer" @click="goHome">
       <!-- 放大了 Logo，将其宽度从 120px 增加到 160px -->
-      <img src="/gemini-svg.svg" alt="Blog Logo" class="w-[160px] object-contain" />
+      <img src="/gemini-svg.svg?v=12" alt="Blog Logo" class="w-[160px] object-contain" />
     </div>
 
     <!-- 导航菜单 -->
