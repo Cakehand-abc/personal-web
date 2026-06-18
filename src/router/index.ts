@@ -16,9 +16,12 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'adminLayout',
-      component: () => import('../views/admin/Layout.vue'), // 我们稍后会创建这个布局
-      redirect: '/admin/dashboard',
+      component: () => import('../views/admin/Layout.vue'),
       children: [
+        {
+          path: '',
+          redirect: '/admin/dashboard'
+        },
         {
           path: 'dashboard',
           name: 'adminDashboard',
@@ -28,6 +31,16 @@ const router = createRouter({
           path: 'settings',
           name: 'adminSettings',
           component: () => import('../views/admin/Settings.vue')
+        },
+        {
+          path: 'articles',
+          name: 'adminArticles',
+          component: () => import('../views/admin/ArticleList.vue')
+        },
+        {
+          path: 'article-edit',
+          name: 'adminArticleEdit',
+          component: () => import('../views/admin/ArticleEdit.vue')
         }
       ]
     },

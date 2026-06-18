@@ -1,22 +1,30 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-white flex">
-    <!-- 侧边栏 (玻璃态风格) -->
-    <aside class="w-64 bg-white/10 backdrop-blur-lg border-r border-white/20 p-6 flex flex-col">
+  <div class="min-h-screen bg-gray-50 text-gray-800 flex">
+    <!-- 侧边栏 -->
+    <aside class="w-64 bg-white shadow-xl border-r border-gray-200 p-6 flex flex-col z-10">
       <div class="mb-8">
         <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
           控制台面板
         </h1>
       </div>
       
-      <nav class="flex-1 space-y-2">
-        <router-link to="/admin/dashboard" class="block px-4 py-2 rounded-lg hover:bg-white/10 transition-colors" active-class="bg-blue-500/50">
+      <nav class="flex-1 space-y-2 font-medium">
+        <router-link to="/admin/dashboard" class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition-colors text-gray-600" active-class="bg-blue-50 text-blue-600 font-bold">
           仪表盘
         </router-link>
-        <router-link to="/admin/settings" class="block px-4 py-2 rounded-lg hover:bg-white/10 transition-colors" active-class="bg-blue-500/50">
+        <router-link to="/admin/settings" class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition-colors text-gray-600" active-class="bg-blue-50 text-blue-600 font-bold">
           网站设置
         </router-link>
-        <!-- 预留其他导航 -->
-        <router-link to="/" class="block px-4 py-2 rounded-lg hover:bg-white/10 transition-colors mt-auto text-gray-400">
+        <!-- 文章管理 -->
+        <router-link 
+          to="/admin/articles" 
+          class="block px-4 py-3 rounded-xl mb-2 transition-colors text-gray-600 hover:bg-gray-100"
+          :class="route.path.includes('/admin/article') ? 'bg-pink-50 text-pink-600 font-bold' : ''"
+        >
+          文章管理
+        </router-link>
+
+        <router-link to="/" class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition-colors mt-auto text-gray-400 font-medium">
           返回博客前台
         </router-link>
       </nav>
@@ -30,5 +38,7 @@
 </template>
 
 <script setup lang="ts">
-// Layout for Admin Dashboard
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 </script>

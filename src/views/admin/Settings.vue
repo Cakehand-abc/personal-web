@@ -1,9 +1,9 @@
 <template>
-  <div class="settings-container">
-    <h2 class="text-3xl font-bold mb-6">网站全局设置舱</h2>
+  <div>
+    <h2 class="text-3xl font-bold mb-6 text-gray-800">网站全局设置</h2>
     
-    <div class="p-8 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-xl max-w-4xl">
-      <el-form label-position="top" :model="form" class="space-y-6">
+    <div class="p-8 bg-white rounded-2xl border border-gray-100 shadow-sm max-w-4xl">
+      <el-form label-position="top" :model="form" class="space-y-6 custom-light-form">
         
         <!-- 基本信息设置 -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -20,7 +20,9 @@
           <el-input v-model="form.recordNumber" placeholder="例如：浙ICP备202xxxx号-1" size="large"></el-input>
         </el-form-item>
 
-        <el-divider border-style="dashed">开场特效设置</el-divider>
+        <el-divider border-style="dashed">
+          <span class="text-gray-400 font-normal">开场特效设置</span>
+        </el-divider>
 
         <!-- 开场动画类型选择 -->
         <el-form-item label="首页开场展示形式">
@@ -45,9 +47,9 @@
             :show-file-list="false"
             accept="image/*,video/*"
           >
-            <el-icon class="el-icon--upload text-blue-500"><upload-filled /></el-icon>
-            <div class="el-upload__text text-gray-300 mt-4">
-              拖拽您的文件到这里，或者 <em class="text-blue-400">点击上传</em>
+            <el-icon class="el-icon--upload text-gray-400"><upload-filled /></el-icon>
+            <div class="el-upload__text text-gray-500 mt-4">
+              拖拽您的文件到这里，或者 <em class="text-blue-500">点击上传</em>
             </div>
             <template #tip>
               <div class="el-upload__tip text-gray-400">
@@ -167,31 +169,15 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 深度修改 Element Plus 默认样式，适应暗黑玻璃态 */
-:deep(.el-form-item__label) {
-  color: #e5e7eb !important; /* Tailwind gray-200 */
+/* 浅色表单样式重写 */
+:deep(.custom-light-form .el-form-item__label) {
+  color: #374151; /* gray-700 */
   font-weight: 500;
 }
 
-:deep(.el-input__wrapper) {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: none;
-}
-
-:deep(.el-input__inner) {
-  color: #ffffff;
-}
-
-:deep(.el-radio-button__inner) {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #e5e7eb;
-}
-
 :deep(.el-upload-dragger) {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px dashed rgba(255, 255, 255, 0.2);
+  background-color: #f9fafb; /* gray-50 */
+  border: 1px dashed #e5e7eb; /* gray-200 */
   transition: all 0.3s;
 }
 

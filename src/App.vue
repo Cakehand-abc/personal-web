@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
-import NavBar from './components/NavBar.vue'
+import SideNav from './components/SideNav.vue'
 import { useSettingStore } from './store/setting'
 
 const route = useRoute()
@@ -94,19 +94,29 @@ onUnmounted(() => {
     </div>
   </div>
 
-  <NavBar v-if="isPublicRoute" />
-  <main :class="{ 'main-content': isPublicRoute }">
+  <!-- 全局布局：前台采用左侧导航 + 右侧主内容 -->
+  <div v-if="isPublicRoute" class="flex min-h-screen bg-[#FDFBF7]">
+    <!-- 左侧固定导航栏 -->
+    <SideNav />
+    
+    <!-- 右侧主内容区域 (避开左侧导航栏的宽度) -->
+    <main class="main-content">
+      <RouterView />
+    </main>
+  </div>
+  
+  <!-- 后台路由直接渲染 -->
+  <template v-else>
     <RouterView />
-  </main>
+  </template>
 </template>
 
 <style scoped lang="scss">
 .main-content {
   flex: 1;
-  padding-top: 80px;
-  max-width: 1600px;
-  margin: 0 auto;
-  width: 100%;
+  margin-left: 190px; /* 为左侧固定的 190px 导航栏留出空间 */
+  min-height: 100vh;
+  width: calc(100% - 190px);
 }
 
 .intro-overlay {
