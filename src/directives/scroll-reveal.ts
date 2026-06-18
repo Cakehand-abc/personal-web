@@ -5,7 +5,7 @@ const scrollRevealDirective: ObjectDirective = {
   mounted(el: HTMLElement, binding: DirectiveBinding) {
     // 默认添加初始类名，设置为透明并向下偏移
     el.classList.add('scroll-reveal-initial')
-    
+
     // 如果想要自定义延迟或偏移量，可以通过 binding.value 传递
     if (binding.value && binding.value.delay) {
       el.style.transitionDelay = `${binding.value.delay}ms`
@@ -22,8 +22,8 @@ const scrollRevealDirective: ObjectDirective = {
         }
       },
       {
-        // rootMargin 设置: -30% 代表元素进入视口底部 30% 之上（即页面三分之一处）才会触发
-        rootMargin: '0px 0px -30% 0px',
+        // rootMargin 设置: -25% 代表元素进入视口底部 25% 之上（即页面四分之一处）才会触发
+        rootMargin: '0px 0px -20% 0px',
         threshold: 0.05
       }
     )

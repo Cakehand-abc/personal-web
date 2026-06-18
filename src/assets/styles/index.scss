@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import "./theme-variables.scss";
+@import "./article.scss";
 
 /* 强制使用浅色主题 */
 body {

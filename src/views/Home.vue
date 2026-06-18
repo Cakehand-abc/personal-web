@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import ArticleCard from '../components/ArticleCard.vue'
+import FeatureSection from '../components/FeatureSection.vue'
 
-const dummyArticles = Array.from({ length: 6 }).map((_, index) => ({
+const dummyArticles = Array.from({ length: 12 }).map((_, index) => ({
   id: index,
   title: `探索二次元与前沿技术的边界 - 篇章 ${index + 1}`,
   date: `2026-06-0${index % 9 + 1}`,
@@ -14,7 +15,8 @@ const dummyArticles = Array.from({ length: 6 }).map((_, index) => ({
 
 <template>
   <div class="block">
-    <div class="main-grid">
+    <FeatureSection />
+    <div class="main-grid mt-8">
       <div class="flex flex-col relative">
         <ul class="tab">
           <li class="active">

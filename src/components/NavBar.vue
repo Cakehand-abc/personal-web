@@ -24,7 +24,9 @@ onUnmounted(() => {
       </div>
       <div class="nav-links">
         <router-link to="/" class="nav-link">Home</router-link>
-        <router-link to="/articles" class="nav-link">Articles</router-link>
+        <router-link to="/articles" class="nav-link">Article</router-link>
+        <router-link to="/anime" class="nav-link">Anime</router-link>
+        <router-link to="/project" class="nav-link">Project</router-link>
         <router-link to="/about" class="nav-link">About</router-link>
       </div>
     </div>

@@ -1,16 +1,50 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { RouterView } from 'vue-router'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { RouterView, useRoute } from 'vue-router'
 import NavBar from './components/NavBar.vue'
+import { useSettingStore } from './store/setting'
+
+const route = useRoute()
+const settingStore = useSettingStore()
+
+// 判断是否为前台路由（不包含 /admin 和 /oauth2）
+const isPublicRoute = computed(() => {
+  return !route.path.startsWith('/admin') && !route.path.startsWith('/oauth2')
+})
 
 const showIntro = ref(true)
 const showLogo = ref(false)
 const fadeOut = ref(false)
 
-onMounted(() => {
+const handleVisibilityChange = () => {
+  if (document.hidden) {
+    document.title = '别走好不好(╥╯^╰╥)'
+  } else {
+    document.title = settingStore.siteName
+  }
+}
+
+onMounted(async () => {
+  // 首先拉取后台的全局设置！
+  await settingStore.fetchSettings()
+
+  // 设置动态标题监听
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+  handleVisibilityChange() // 初始化设置
+
+  // 如果不是前台页面，直接不看动画了
+  if (!isPublicRoute.value) {
+    showIntro.value = false
+    return
+  }
+
   // 禁止整个页面的滚动，强制看完动画
   document.body.style.overflow = 'hidden'
   document.body.classList.add('theme-light') // 确保应用浅色主题
+
+  // 如果有上传媒体文件，展示时间拉长到 3 秒让大家欣赏
+  // 如果没上传（使用默认 CSS），就保持原来的 1.5 秒
+  const introDuration = settingStore.introMediaUrl ? 3000 : 1500
 
   setTimeout(() => {
     showLogo.value = true
@@ -18,26 +52,50 @@ onMounted(() => {
 
   setTimeout(() => {
     fadeOut.value = true
-    
-    // 淡出完成后，彻底移除遮罩并恢复滚动
     setTimeout(() => {
       document.body.style.overflow = ''
       showIntro.value = false
-    }, 1500)
-  }, 3000)
+    }, 800)
+  }, introDuration)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 </script>
 
 <template>
-  <!-- 独立的开场动画遮罩层，覆盖在整个应用之上，不可被滑动绕过 -->
-  <div v-if="showIntro" class="intro-overlay" :class="{ 'fade-out': fadeOut }" @wheel.prevent @touchmove.prevent>
-    <div class="logo-wrapper" :class="{ 'fade-in': showLogo }">
-      <h1 class="anime-logo-text text-4xl md:text-6xl font-bold tracking-wider">Welcome To My Blog</h1>
+  <!-- 独立的开场动画遮罩层，仅在前台页面展示 -->
+  <div v-if="showIntro && isPublicRoute" class="intro-overlay" :class="{ 'fade-out': fadeOut }" @wheel.prevent @touchmove.prevent>
+    
+    <!-- 1. 如果后台配置了开场视频 -->
+    <video 
+      v-if="settingStore.introMediaUrl && settingStore.introMediaType === 'video'" 
+      :src="settingStore.introMediaUrl" 
+      class="intro-media absolute w-full h-full object-cover"
+      :class="{ 'fade-in': showLogo }"
+      autoplay muted loop playsinline>
+    </video>
+
+    <!-- 2. 如果后台配置了开场图片 -->
+    <img 
+      v-else-if="settingStore.introMediaUrl && settingStore.introMediaType === 'image'" 
+      :src="settingStore.introMediaUrl" 
+      class="intro-media absolute w-full h-full object-cover" 
+      :class="{ 'fade-in': showLogo }"
+      alt="Intro Image" 
+    />
+
+    <!-- 3. 如果后台啥都没配，或者正在加载中，则使用兜底的纯 CSS 文字特效 -->
+    <div v-else class="logo-wrapper relative z-10" :class="{ 'fade-in': showLogo }">
+      <h1 class="anime-logo-text text-4xl md:text-6xl font-bold tracking-wider">
+        Welcome To My Blog
+      </h1>
     </div>
   </div>
 
-  <NavBar />
-  <main class="main-content">
+  <NavBar v-if="isPublicRoute" />
+  <main :class="{ 'main-content': isPublicRoute }">
     <RouterView />
   </main>
 </template>
@@ -62,11 +120,11 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   z-index: 999999;
-  transition: opacity 1.5s ease-in-out;
 }
 
-.fade-out {
+.intro-overlay.fade-out {
   opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 
@@ -77,6 +135,17 @@ onMounted(() => {
 }
 
 .logo-wrapper.fade-in {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.intro-media {
+  opacity: 0;
+  transform: scale(1.05); /* 微微放大，制造景深感 */
+  transition: opacity 2s ease, transform 3s ease-out;
+}
+
+.intro-media.fade-in {
   opacity: 1;
   transform: scale(1);
 }
