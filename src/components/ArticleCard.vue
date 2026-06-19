@@ -1,12 +1,22 @@
 <script setup lang="ts">
-defineProps<{
+import { useRouter } from 'vue-router'
+
+const props = defineProps<{
   data: any
 }>()
+
+const router = useRouter()
+
+const goToArticle = () => {
+  if (props.data && props.data.id !== undefined) {
+    router.push('/article/' + props.data.id)
+  }
+}
 </script>
 
 <template>
   <div class="article-container" v-scroll-reveal>
-    <div class="article bg-ob-deep-800 rounded-2xl shadow-md overflow-hidden cursor-pointer group flex flex-col h-full hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2">
+    <div @click="goToArticle" class="article bg-ob-deep-800 rounded-2xl shadow-md overflow-hidden cursor-pointer group flex flex-col h-full hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2">
       <div class="article-thumbnail relative h-48 overflow-hidden">
         <img :src="data.coverUrl" alt="cover" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
       </div>

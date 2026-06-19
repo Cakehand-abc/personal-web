@@ -27,6 +27,10 @@
         <router-link to="/" class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition-colors mt-auto text-gray-400 font-medium">
           返回博客前台
         </router-link>
+        
+        <button @click="handleLogout" class="w-full text-left block px-4 py-3 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors text-gray-400 font-medium mt-2">
+          退出登录
+        </button>
       </nav>
     </aside>
 
@@ -38,7 +42,15 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 const route = useRoute()
+const router = useRouter()
+
+const handleLogout = () => {
+  localStorage.removeItem('token')
+  ElMessage.success('已成功退出登录')
+  router.push('/')
+}
 </script>

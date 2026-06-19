@@ -35,6 +35,14 @@
           </div>
         </el-form-item>
 
+        <el-form-item label="开启旧版纯文字欢迎动画" v-if="!form.introMediaUrl">
+          <el-switch
+            v-model="form.useOldIntro"
+            active-text="启用"
+            inactive-text="停用（默认使用全新 SVG 流金动画）"
+          />
+        </el-form-item>
+
         <!-- 超级酷炫的拖拽上传器 -->
         <el-form-item label="上传您的媒体素材">
           <el-upload
@@ -96,7 +104,8 @@ const form = reactive({
   siteSignature: '',
   recordNumber: '',
   introMediaType: 'image',
-  introMediaUrl: ''
+  introMediaUrl: '',
+  useOldIntro: false
 })
 
 // 为 el-upload 绑定带有 Token 的请求头

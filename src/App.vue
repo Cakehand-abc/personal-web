@@ -95,7 +95,7 @@ onUnmounted(() => {
     <!-- 4. 默认兜底动画：全新的横向 SVG 流金岁月动画 -->
     <div v-else class="svg-intro-wrapper absolute w-full h-full flex justify-center items-center">
       <!-- 使用 object 引入，确保 SVG 内部的 CSS 动画能正常播放 -->
-      <object data="/gemini-svg-horizontal.svg?v=13" type="image/svg+xml" class="w-full max-w-4xl px-4 md:px-10"></object>
+      <object data="/gemini-svg-horizontal.svg?v=20" type="image/svg+xml" class="w-full max-w-4xl px-4 md:px-10"></object>
     </div>
   </div>
 

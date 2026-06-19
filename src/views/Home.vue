@@ -2,15 +2,28 @@
 import ArticleCard from '../components/ArticleCard.vue'
 import FeatureSection from '../components/FeatureSection.vue'
 
-const dummyArticles = Array.from({ length: 12 }).map((_, index) => ({
-  id: index,
-  title: `探索二次元与前沿技术的边界 - 篇章 ${index + 1}`,
-  date: `2026-06-0${index % 9 + 1}`,
-  summary: '在这个光怪陆离的数字世界里，我们不仅是代码的编织者，更是梦境的创造者。本文将带你深入了解如何使用 Vue 3 和现代 CSS 构建极具视觉冲击力的应用界面。',
-  coverUrl: `https://picsum.photos/seed/${index + 100}/800/600`,
-  categoryName: '前端技术',
-  tags: [{ id: 1, tagName: 'Vue3' }, { id: 2, tagName: 'CSS' }]
-}))
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+
+const articles = ref<any[]>([])
+const loading = ref(true)
+
+const fetchArticles = async () => {
+  try {
+    const res = await axios.get('/api/articles/list', { params: { current: 1, size: 10 } })
+    if (res.data.code === 200) {
+      articles.value = res.data.data.records
+    }
+  } catch (err) {
+    console.error('Failed to fetch articles', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchArticles()
+})
 </script>
 
 <template>
@@ -33,8 +46,11 @@ const dummyArticles = Array.from({ length: 12 }).map((_, index) => ({
           </li>
         </ul>
         
-        <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-          <li v-for="article in dummyArticles" :key="article.id">
+        <div v-if="loading" class="text-center text-ob-dim py-10">
+          加载中...
+        </div>
+        <ul v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          <li v-for="article in articles" :key="article.id">
             <ArticleCard :data="article" />
           </li>
         </ul>

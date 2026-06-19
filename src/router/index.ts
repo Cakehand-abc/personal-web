@@ -14,6 +14,11 @@ const router = createRouter({
       component: () => import('../views/OAuth2Redirect.vue')
     },
     {
+      path: '/article/:id',
+      name: 'articleDetail',
+      component: () => import('../views/Article.vue')
+    },
+    {
       path: '/admin',
       name: 'adminLayout',
       component: () => import('../views/admin/Layout.vue'),
