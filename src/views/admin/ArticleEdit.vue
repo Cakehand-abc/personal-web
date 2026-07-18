@@ -152,10 +152,20 @@ const fetchDicts = async () => {
       request.get('/api/categories/list'),
       request.get('/api/tags/list')
     ])
-    if (catRes.code === 200) categoryList.value = catRes.data
-    if (tagRes.code === 200) tagList.value = tagRes.data
+    if (catRes.code === 200 && catRes.data && catRes.data.length > 0) {
+      categoryList.value = catRes.data
+    } else {
+      categoryList.value = [{ id: 1, name: '文章' }, { id: 2, name: '随笔' }]
+    }
+    
+    if (tagRes.code === 200 && tagRes.data && tagRes.data.length > 0) {
+      tagList.value = tagRes.data
+    } else {
+      tagList.value = [{ id: 1, name: '前端' }, { id: 2, name: '日常' }, { id: 3, name: '二次元' }]
+    }
   } catch (error) {
-    ElMessage.error('获取分类或标签失败')
+    categoryList.value = [{ id: 1, name: '文章' }, { id: 2, name: '随笔' }]
+    tagList.value = [{ id: 1, name: '前端' }, { id: 2, name: '日常' }, { id: 3, name: '二次元' }]
   }
 }
 

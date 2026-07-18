@@ -1,52 +1,56 @@
 <template>
   <div id="feature">
-    <!-- 轮播图部分：替代原有的 HorizontalArticle -->
-    <el-carousel trigger="click" height="500px" class="home-carousel rounded-2xl shadow-lg mb-8" :interval="5000">
+    <!-- 顶部锚点：供 Logo 和 Home 滚动使用 -->
+    <div id="home" class="absolute -top-20"></div>
+
+    <!-- 轮播图部分：霸占整屏，纯净无暇 -->
+    <el-carousel trigger="click" :height="'calc(100vh - 40px)'" class="home-carousel rounded-2xl shadow-lg my-5" :interval="5000">
       <el-carousel-item v-for="item in carouselArticles" :key="item.id">
         <div class="feature-article h-full !transform-none">
           <div class="feature-thumbnail h-full">
             <img class="ob-hz-thumbnail" :src="item.cover" alt="" />
-            <span class="thumbnail-screen" :style="gradientBackground" />
-          </div>
-          <div class="feature-content h-full">
-            <span>
-              <b>{{ item.category }}</b>
-              <ul>
-                <li v-for="tag in item.tags" :key="tag"><em># {{ tag }}</em></li>
-              </ul>
-            </span>
-            <h1 class="article-title text-ob-bright text-2xl lg:text-4xl font-extrabold mb-6 lg:mt-4 lg:mb-8">
-              <a><span data-dia="article-link">{{ item.title }}</span></a>
-            </h1>
-            <p class="article-content-main text-base lg:text-lg mb-2">{{ item.summary }}</p>
+            <!-- 移除文字与蒙版，仅保留纯净图片 -->
           </div>
         </div>
       </el-carousel-item>
     </el-carousel>
 
-    <!-- 编辑精选块 -->
-    <div class="inverted-main-grid py-8 gap-8 box-border">
-      <div class="relative overflow-hidden h-56 lg:h-auto rounded-2xl bg-ob-deep-800 shadow-lg">
-        <div class="ob-gradient-plate opacity-90 relative z-10 bg-ob-deep-900 rounded-2xl flex justify-start items-end px-8 pb-10 shadow-md h-full">
-          <h2 class="text-3xl pb-8 lg:pb-16 flex flex-col text-white">
-            <span class="title-gradient">
-              编辑精选
-            </span>
-            <span class="relative text-2xl text-ob-bright font-semibold flex items-center">
-              <svg class="svg-icon inline-block w-6 h-6 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill="currentColor" d="M12 22C9.28002 22 4.57002 19.33 4.05002 14.99C3.69002 11.95 5.51002 9.6 6.01002 8.99C6.42002 11.1 7.53002 12.7 8.95002 12.99C9.21002 13.04 9.54002 13.06 9.93002 12.99C9.82002 10.67 10 6.33 12.86 3C13.17 2.63 13.66 2.3 14 2C14.24 4.64 14.98 6.12 15.8 7C16.91 8.19 18.59 9 19.48 11.28C19.52 11.37 19.63 11.65 19.72 12C20.34 14.38 20.04 17.88 17.76 19.99C15.85 21.76 13.35 22 13 22C12.49 22 12.56 22 12 22Z"></path>
-                <path fill="currentColor" d="M14 16C12.96 17.04 11.41 17.43 10 17C11.13 18.09 12.7 18.5 14 18C16.01 17.24 16.83 14.54 16 13C15.74 12.53 15.36 12.21 15 12C15.43 13.41 15.04 14.96 14 16Z"></path>
-              </svg>
-              专题文章
-            </span>
-          </h2>
+    <!-- 精选锚点 -->
+    <div id="featured" class="relative -top-20"></div>
+
+    <!-- 编辑精选块 (现已改为个人名片+精选文章) -->
+    <div class="grid lg:grid-cols-[320px_1fr] py-8 gap-8 box-border">
+      
+      <!-- 左侧：个人头像与签名 -->
+      <div class="sidebar flex flex-col gap-8 h-full">
+        <div class="bg-ob-deep-800 p-6 rounded-2xl shadow-md text-center sidebar-widget relative z-10" v-scroll-reveal>
+          <img :src="settingStore.avatarUrl || 'https://picsum.photos/seed/avatar/150/150'" alt="Avatar" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-white shadow-lg object-cover" />
+          <h3 class="text-xl font-bold text-ob-bright">{{ settingStore.siteName || '您的名字' }}</h3>
+          <p class="text-ob-dim mt-2 text-sm">在这里记录技术与生活的点滴。</p>
+          <div class="mt-6 flex justify-center gap-4">
+            <div class="text-center"><div class="font-bold text-ob-bright">文章</div><div class="text-sm text-ob-dim">42</div></div>
+            <div class="text-center"><div class="font-bold text-ob-bright">分类</div><div class="text-sm text-ob-dim">8</div></div>
+            <div class="text-center"><div class="font-bold text-ob-bright">标签</div><div class="text-sm text-ob-dim">24</div></div>
+          </div>
         </div>
-        <span class="absolute top-0 w-full h-full z-0" :style="gradientBackground" />
+
+        <div class="bg-ob-deep-800 p-6 rounded-2xl shadow-md sidebar-widget flex-1 flex flex-col relative z-10" v-scroll-reveal>
+          <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-ob-bright">
+            <span>📢 个人签名</span>
+          </h3>
+          <p class="text-sm text-ob-dim leading-relaxed flex-1">
+            {{ settingStore.siteSignature || '欢迎来到我的温馨空间！目前前端样式正在按照邻家天使官网的风格进行二次元化重构中...' }}
+          </p>
+        </div>
       </div>
 
-      <ul class="grid lg:grid-cols-2 gap-8">
+      <!-- 右侧：精选文章 -->
+      <div v-if="featuredArticles.length === 0" class="flex justify-center items-center h-full min-h-[200px] text-ob-dim">
+        暂无专题文章...
+      </div>
+      <ul v-else class="grid lg:grid-cols-2 gap-8">
         <li v-for="article in featuredArticles" :key="article.id">
-          <ArticleCard class="home-featured-article" :data="article" />
+          <ArticleCard class="home-featured-article h-full" :data="article" />
         </li>
       </ul>
     </div>
@@ -55,7 +59,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import ArticleCard from './ArticleCard.vue'
+import { activeSection } from '../store/navState'
+import { useSettingStore } from '../store/setting'
+
+const router = useRouter()
+const settingStore = useSettingStore()
 
 const gradientBackground = computed(() => {
   return { background: 'linear-gradient(130deg, #e94560, #ff8787)' }
@@ -68,6 +78,10 @@ const carouselArticles = ref([
 ])
 
 const featuredArticles = ref<any[]>([])
+
+const viewArticle = (id: number) => {
+  router.push({ path: `/article/${id}`, state: { sourceAnchor: activeSection.value } })
+}
 
 onMounted(async () => {
   try {

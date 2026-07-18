@@ -1,26 +1,27 @@
 <template>
-  <aside class="w-[190px] h-screen fixed left-0 top-0 bg-[#FDFBF7] flex flex-col items-center py-10 z-50 overflow-y-auto custom-scrollbar border-r border-[#EFEBE0]">
+  <aside class="w-[190px] h-screen fixed left-0 top-0 bg-[#FDFBF7] flex flex-col items-center py-6 z-50 overflow-y-auto custom-scrollbar border-r border-[#EFEBE0]">
     
     <!-- 顶部 Logo 区域 (引入 public 下的 SVG) -->
-    <div class="mb-12 w-full flex justify-center cursor-pointer" @click="goHome">
+    <div class="mb-6 w-full flex justify-center cursor-pointer" @click="goHome">
       <!-- 放大了 Logo，将其宽度从 120px 增加到 160px -->
       <img src="/gemini-svg.svg?v=15" alt="Blog Logo" class="w-[160px] object-contain" />
     </div>
 
     <!-- 导航菜单 -->
     <nav class="flex-1 w-full px-6">
-      <ul class="flex flex-col space-y-6">
+      <ul class="flex flex-col space-y-5">
         <li 
           v-for="nav in navList" 
           :key="nav.path" 
           class="l-nav__item"
-          :class="{ 'is-active': route.path === nav.path }"
+          :class="{ 'is-active': activeNavPath === nav.path }"
+          @click="handleNavClick(nav)"
         >
-          <router-link :to="nav.path" class="l-nav__link">
+          <div class="l-nav__link">
             <span class="l-nav__active">
               <span class="nav-text font-serif tracking-widest text-[16px] font-bold">{{ nav.name }}</span>
             </span>
-          </router-link>
+          </div>
         </li>
       </ul>
     </nav>
@@ -29,24 +30,75 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { activeSection } from '../store/navState'
 
 const route = useRoute()
 const router = useRouter()
 
-// 暂时写死几个导航，后续可以从后端拉取分类来填充
 const navList = [
-  { name: 'Home', path: '/' },
-  { name: 'Articles', path: '/articles' },
-  { name: 'About', path: '/about' }
+  { name: 'Home', isAnchor: true, target: '#home', path: '#home' },
+  { name: 'Featured', isAnchor: true, target: '#featured', path: '#featured' },
+  { name: 'Articles', isAnchor: true, target: '#articles', path: '#articles' },
+  { name: 'Essays', isAnchor: true, target: '#essays', path: '#essays' },
+  { name: 'Gallery', isAnchor: true, target: '#gallery', path: '#gallery' },
+  { name: 'Projects', isAnchor: true, target: '#projects', path: '#projects' },
+  { name: 'Message', isAnchor: true, target: '#message', path: '#message' },
+  { name: 'About', isAnchor: true, target: '#about', path: '#about' }
 ]
+
+const activeNavPath = computed(() => {
+  if (route.path === '/') {
+    return activeSection.value
+  } else if (route.path.startsWith('/article/')) {
+    // 尝试读取跳转时存下的 state，如果没有，默认高亮 '#articles'
+    return history.state.sourceAnchor || '#articles'
+  }
+  return route.path
+})
+
+// 先快后慢再快的缓动函数 (easeInOutCubic)
+const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+
+const smoothScrollTo = (targetId: string, duration: number) => {
+  const target = document.querySelector(targetId) as HTMLElement
+  if (!target) return
+  const targetPosition = target.getBoundingClientRect().top + window.scrollY
+  const startPosition = window.scrollY
+  const distance = targetPosition - startPosition
+  let startTime: number | null = null
+
+  const animation = (currentTime: number) => {
+    if (startTime === null) startTime = currentTime
+    const timeElapsed = currentTime - startTime
+    const progress = Math.min(timeElapsed / duration, 1)
+    
+    window.scrollTo(0, startPosition + distance * easeInOutCubic(progress))
+
+    if (timeElapsed < duration) {
+      requestAnimationFrame(animation)
+    }
+  }
+  requestAnimationFrame(animation)
+}
+
+const handleNavClick = async (nav: any) => {
+  if (nav.isAnchor) {
+    if (route.path !== '/') {
+      await router.push('/')
+      // 等待 DOM 渲染后滚动
+      setTimeout(() => smoothScrollTo(nav.target, 800), 100)
+    } else {
+      smoothScrollTo(nav.target, 800)
+    }
+  } else {
+    router.push(nav.path)
+  }
+}
 
 // 返回首页逻辑，如果在首页则回到顶部
 const goHome = () => {
-  if (route.path === '/') {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  } else {
-    router.push('/')
-  }
+  handleNavClick(navList[0])
 }
 </script>
 
@@ -109,10 +161,10 @@ aside {
   height: 18px;
   background: url('/icon-wing.svg') no-repeat center / contain;
   
-  /* 初始状态机（非激活时）：透明且向左偏。立刻执行，不等待 */
+  /* 初始状态机（非激活时）：透明且向左偏。缓慢淡出 0.4s */
   opacity: 0 !important;
   transform: translateY(-50%) translateX(-10px);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.4s ease, transform 0.4s ease;
   pointer-events: none; /* 防止鼠标事件干扰 */
 }
 
@@ -120,8 +172,8 @@ aside {
 .l-nav__item.is-active .l-nav__active::before {
   opacity: 1 !important;
   transform: translateY(-50%) translateX(0) !important;
-  /* 激活时，延迟 0.15s 执行淡入，等待上一个标签的翅膀消失 */
-  transition: opacity 0.4s ease 0.15s, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s !important;
+  /* 激活时，延迟 0.6s 执行淡入，等待页面滑动快结束时再展现，且淡入速度放慢到 0.6s */
+  transition: opacity 0.6s ease 0.6s, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s !important;
 }
 
 /* 确保非激活状态下悬浮时，翅膀绝对透明 */

@@ -1,15 +1,23 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { useSettingStore } from '../store/setting'
+import { activeSection } from '../store/navState'
+import { computed } from 'vue'
 
 const props = defineProps<{
   data: any
 }>()
 
 const router = useRouter()
+const settingStore = useSettingStore()
+
+const displayCoverUrl = computed(() => {
+  return props.data.coverUrl || settingStore.defaultCoverUrl
+})
 
 const goToArticle = () => {
   if (props.data && props.data.id !== undefined) {
-    router.push('/article/' + props.data.id)
+    router.push({ path: '/article/' + props.data.id, state: { sourceAnchor: activeSection.value } })
   }
 }
 </script>
@@ -18,7 +26,8 @@ const goToArticle = () => {
   <div class="article-container" v-scroll-reveal>
     <div @click="goToArticle" class="article bg-ob-deep-800 rounded-2xl shadow-md overflow-hidden cursor-pointer group flex flex-col h-full hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2">
       <div class="article-thumbnail relative h-48 overflow-hidden">
-        <img :src="data.coverUrl" alt="cover" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+        <img v-if="displayCoverUrl" :src="displayCoverUrl" alt="cover" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+        <div v-else class="w-full h-full bg-ob-deep-900 flex items-center justify-center text-ob-dim">无封面</div>
       </div>
       
       <div class="article-content p-6 flex flex-col flex-1">

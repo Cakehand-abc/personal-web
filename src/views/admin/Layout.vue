@@ -23,6 +23,16 @@
         >
           文章管理
         </router-link>
+        
+        <router-link to="/admin/gallery" class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition-colors text-gray-600" active-class="bg-blue-50 text-blue-600 font-bold">
+          画廊管理
+        </router-link>
+        <router-link to="/admin/projects" class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition-colors text-gray-600" active-class="bg-blue-50 text-blue-600 font-bold">
+          作品集管理
+        </router-link>
+        <router-link to="/admin/messages" class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition-colors text-gray-600" active-class="bg-blue-50 text-blue-600 font-bold">
+          留言板管理
+        </router-link>
 
         <router-link to="/" class="block px-4 py-3 rounded-xl hover:bg-gray-100 transition-colors mt-auto text-gray-400 font-medium">
           返回博客前台

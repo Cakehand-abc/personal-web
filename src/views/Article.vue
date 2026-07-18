@@ -45,7 +45,8 @@ const goBack = () => {
     </div>
     
     <template v-else-if="article">
-      <!-- 头部 Banner -->
+      <!-- 头部 Banner (按用户要求隐藏，采用沉浸式全屏纯文字排版) -->
+      <!-- 
       <div class="article-banner relative h-96 flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
         <img v-if="article.coverUrl" :src="article.coverUrl" class="absolute inset-0 w-full h-full object-cover z-0" />
@@ -71,16 +72,44 @@ const goBack = () => {
           </div>
         </div>
       </div>
+      -->
 
-      <!-- 主体内宽 -->
-      <div class="max-w-4xl mx-auto px-4 -mt-16 relative z-30">
-        <div class="bg-ob-deep-800 rounded-2xl shadow-xl p-6 md:p-12 article-content">
-          <MdPreview :modelValue="article.content || '*本文没有内容*'" theme="dark" previewTheme="cyanosis" />
+      <!-- 主体内容容器 (对应目标网站的 l-contents) -->
+      <div class="w-full max-w-[1920px] mx-auto px-[8%] pt-10 pb-16 md:pt-[100px] md:pb-[100px] relative z-30 anim-fadeInFromBottom">
+        
+        <!-- 大号板块名称 (对应 news__heading) -->
+        <div class="mb-10 text-left">
+           <div class="inline-block relative pb-4 group">
+             <!-- 如果有现成的 SVG 可以替换这里的文字，这里先保留高雅的文字版 -->
+             <span class="text-4xl md:text-5xl font-serif tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-[#DDB95B] to-[#B89030]">{{ article.categoryName || 'Articles' }}</span>
+             <!-- 底部波点线 -->
+             <div class="absolute bottom-0 left-0 w-[120%] h-[3px] golden-dot-line"></div>
+           </div>
+        </div>
+
+        <!-- 文章详情独立白盒 (对应 post news__post) -->
+        <div class="bg-ob-deep-800 rounded-sm shadow-sm pt-12 pb-16 px-8 md:px-[8%] article-content min-h-[70vh]">
+          
+          <!-- 文章日期 -->
+          <div class="text-[#e27c8e] text-[1.4rem] mb-6 font-serif tracking-[0.1em]">
+            {{ (article.createdAt || '').substring(0, 10).replace(/-/g, '.') || '2026.07.16' }}
+          </div>
+
+          <!-- 文章标题 -->
+          <div class="mb-12 text-left">
+             <h1 class="text-3xl md:text-[2.8rem] font-serif font-bold text-[#222222] mb-8 leading-[1.6] tracking-wider">{{ article.title }}</h1>
+             <!-- 贯穿内部的波点分割线 -->
+             <div class="w-full h-[3px] golden-dot-line opacity-60"></div>
+          </div>
+
+          <!-- 正文渲染区 (文字大小根据目标站点调整为 1.4rem/1.6rem) -->
+          <MdPreview :modelValue="article.content || '*本文没有内容*'" theme="light" previewTheme="default" class="custom-md-preview" />
         </div>
         
-        <div class="mt-8 text-center">
-          <button @click="goBack" class="px-6 py-2 rounded-full border border-ob-dim text-ob-normal hover:text-ob-bright hover:border-ob-bright transition-colors">
-            返回首页
+        <!-- 底部返回按钮 (对应 button-back) -->
+        <div class="mt-16 text-center">
+          <button @click="goBack" class="px-12 py-4 rounded-full border border-gray-300 text-gray-500 hover:text-[#B89030] hover:border-[#B89030] transition-colors font-serif tracking-widest text-lg md:text-xl">
+            BACK
           </button>
         </div>
       </div>
@@ -95,7 +124,29 @@ const goBack = () => {
 
 <style scoped>
 .article-page {
-  background: var(--background-primary);
+  background-color: #FDFCFD; /* 纯净的打底色 */
+  background-image: 
+    /* === 上半区：天蓝主导，随机夹杂少量浅紫与极白 === */
+    radial-gradient(circle at 15% 10%, #D5FFFE 0%, transparent 40%),
+    radial-gradient(circle at 85% 15%, #E4F8FC 0%, transparent 45%),
+    radial-gradient(circle at 45% 5%, #FFF3FD 0%, transparent 25%),
+    radial-gradient(circle at 30% 20%, #FBFFFE 0%, transparent 35%),
+    
+    /* === 中间区：梦幻交织过渡 === */
+    radial-gradient(circle at 75% 45%, #D5FFFE 0%, transparent 30%),
+    radial-gradient(circle at 20% 55%, #F7F4F9 0%, transparent 35%),
+    radial-gradient(circle at 50% 50%, #FAFEFF 0%, transparent 50%),
+    
+    /* === 下半区：浅紫主导，随机夹杂少量天蓝与极白 === */
+    radial-gradient(circle at 15% 85%, #F7F4F9 0%, transparent 45%),
+    radial-gradient(circle at 85% 90%, #FFF3FD 0%, transparent 40%),
+    radial-gradient(circle at 50% 95%, #F6F6FB 0%, transparent 45%),
+    radial-gradient(circle at 65% 75%, #D5FFFE 0%, transparent 30%),
+    radial-gradient(circle at 35% 80%, #FEFEFE 0%, transparent 35%);
+    
+  /* 固定背景视角，无论文章多长，屏幕始终保持这种光晕交织 */
+  background-attachment: fixed;
+  background-size: 100vw 100vh;
 }
 .bg-ob-deep-800 {
   background: var(--background-secondary);
@@ -117,8 +168,49 @@ const goBack = () => {
 }
 
 /* 穿透修改 md-editor 的背景，使其与我们的二次元透明卡片融合 */
-:deep(.md-editor-dark) {
+:deep(.md-editor) {
   --md-bk-color: transparent !important;
-  --md-color: var(--text-normal) !important;
+  --md-color: #222222 !important; /* 加深正文阅读文字的颜色 */
+  --md-color-title: #222222 !important; /* 强制标题也使用该颜色 */
+  font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+  font-size: 1.4rem;
+}
+@media (min-width: 768px) {
+  :deep(.md-editor) {
+    font-size: 1.6rem;
+    line-height: 2;
+  }
+}
+:deep(.md-editor h1, .md-editor h2, .md-editor h3, .md-editor h4, .md-editor h5, .md-editor h6) {
+  color: #222222 !important;
+  margin-top: 2em;
+  margin-bottom: 1em;
+}
+:deep(.md-editor-light) {
+  --md-bk-color: transparent !important;
+}
+
+/* 连续波点修饰线 (借用 SideNav 的 SVG) */
+.golden-dot-line {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='4'%3E%3Ccircle cx='4' cy='2' r='1.8' fill='%23B89030'/%3E%3C/svg%3E");
+  background-size: 8px 4px;
+  background-position: left bottom;
+  background-repeat: repeat-x;
+}
+
+@keyframes fade-in-from-bottom {
+  0% {
+    transform: translateY(2rem);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.anim-fadeInFromBottom {
+  animation-name: fade-in-from-bottom;
+  animation-duration: 1.3s;
+  animation-fill-mode: both;
 }
 </style>

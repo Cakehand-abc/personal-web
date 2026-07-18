@@ -2,6 +2,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0, behavior: 'smooth' }
+    }
+  },
   routes: [
     {
       path: '/',
@@ -46,6 +53,21 @@ const router = createRouter({
           path: 'article-edit',
           name: 'adminArticleEdit',
           component: () => import('../views/admin/ArticleEdit.vue')
+        },
+        {
+          path: 'gallery',
+          name: 'adminGallery',
+          component: () => import('../views/admin/GalleryList.vue')
+        },
+        {
+          path: 'projects',
+          name: 'adminProjects',
+          component: () => import('../views/admin/ProjectList.vue')
+        },
+        {
+          path: 'messages',
+          name: 'adminMessages',
+          component: () => import('../views/admin/MessageList.vue')
         }
       ]
     },
@@ -53,6 +75,11 @@ const router = createRouter({
     {
       path: '/home',
       redirect: '/'
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/Login.vue')
     }
   ]
 })
@@ -61,9 +88,9 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
 
-  // 如果访问的是 /admin 开头的管理端页面，且没有 token，则踢回首页
+  // 如果访问的是 /admin 开头的管理端页面，且没有 token，则重定向到登录页
   if (to.path.startsWith('/admin') && !token) {
-    next('/')
+    next('/login')
   } else {
     next()
   }

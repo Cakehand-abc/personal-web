@@ -9,6 +9,7 @@ export const useSettingStore = defineStore('setting', () => {
   const introMediaUrl = ref('')
   const recordNumber = ref('')
   const useOldIntro = ref(false)
+  const defaultCoverUrl = ref('')
 
   const fetchSettings = async () => {
     try {
@@ -20,6 +21,7 @@ export const useSettingStore = defineStore('setting', () => {
         introMediaUrl.value = res.data.introMediaUrl || ''
         recordNumber.value = res.data.recordNumber || ''
         useOldIntro.value = res.data.useOldIntro || false
+        defaultCoverUrl.value = res.data.defaultCoverUrl || ''
         
         // 更新网站标题
         document.title = siteName.value
@@ -30,7 +32,7 @@ export const useSettingStore = defineStore('setting', () => {
   }
 
   return { 
-    siteName, siteSignature, introMediaType, introMediaUrl, recordNumber, useOldIntro,
+    siteName, siteSignature, introMediaType, introMediaUrl, recordNumber, useOldIntro, defaultCoverUrl,
     fetchSettings 
   }
 })

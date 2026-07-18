@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
 import SideNav from './components/SideNav.vue'
+import GlobalFooter from './components/Footer.vue'
 import { useSettingStore } from './store/setting'
 
 const route = useRoute()
@@ -105,8 +106,11 @@ onUnmounted(() => {
     <SideNav />
     
     <!-- 右侧主内容区域 (避开左侧导航栏的宽度) -->
-    <main class="main-content">
-      <RouterView />
+    <main class="main-content flex flex-col">
+      <div class="flex-1">
+        <RouterView />
+      </div>
+      <GlobalFooter />
     </main>
   </div>
   

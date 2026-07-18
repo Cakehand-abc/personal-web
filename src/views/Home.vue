@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import ArticleCard from '../components/ArticleCard.vue'
 import FeatureSection from '../components/FeatureSection.vue'
-
-import { ref, onMounted } from 'vue'
+import MessageBoard from '../components/MessageBoard.vue'
+import Footer from '../components/Footer.vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
+import { activeSection } from '../store/navState'
 
 const articles = ref<any[]>([])
+const projects = ref<any[]>([])
 const loading = ref(true)
+const projectsLoading = ref(true)
 
 const fetchArticles = async () => {
   try {
@@ -21,16 +25,73 @@ const fetchArticles = async () => {
   }
 }
 
+const fetchProjects = async () => {
+  projectsLoading.value = true
+  try {
+    const res = await axios.get('http://localhost:8080/api/projects/list')
+    if (res.data.code === 200) {
+      projects.value = res.data.data
+    }
+  } catch (error) {
+    console.error('获取作品集失败:', error)
+  } finally {
+    projectsLoading.value = false
+  }
+}
+
+let observer: IntersectionObserver | null = null
+
 onMounted(() => {
   fetchArticles()
+  fetchProjects()
+  
+  // 设置精准的高度检测 ScrollSpy (这里的数组顺序必须与页面上的锚点顺序完全一致)
+  const sections = ['#home', '#featured', '#articles', '#essays', '#gallery', '#projects', '#message', '#about']
+  
+  const handleScroll = () => {
+    const triggerLine = window.innerHeight / 2 // 以屏幕一半作为触发分界线
+    let currentId = '#home'
+    
+    for (const selector of sections) {
+      const el = document.querySelector(selector) as HTMLElement
+      if (el) {
+        const rect = el.getBoundingClientRect()
+        // 找到最后一个越过屏幕中线的锚点
+        if (rect.top <= triggerLine) {
+          currentId = selector
+        }
+      }
+    }
+    if (activeSection.value !== currentId) {
+      activeSection.value = currentId
+    }
+  }
+
+  // 使用 throttle 节流可以优化性能，这里直接简单绑定
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  handleScroll() // 初始化调用
+
+  // 清理
+  observer = { disconnect: () => window.removeEventListener('scroll', handleScroll) } as any
+})
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect()
+  }
 })
 </script>
 
 <template>
   <div class="block">
     <FeatureSection />
-    <div class="main-grid mt-8">
+    <div class="mt-8">
       <div class="flex flex-col relative">
+        <div id="articles" class="relative -top-32"></div>
+        <div class="mt-8 mb-4 flex items-center gap-4">
+          <h2 class="text-2xl font-bold text-ob-bright">全部文章 Articles</h2>
+          <div class="flex-1 h-px bg-ob-deep-800"></div>
+        </div>
         <ul class="tab">
           <li class="active">
             <span class="first-tab">全部</span>
@@ -54,30 +115,60 @@ onMounted(() => {
             <ArticleCard :data="article" />
           </li>
         </ul>
-      </div>
-      
-      <div>
-        <div class="sidebar flex flex-col gap-8">
-          <div class="bg-ob-deep-800 p-6 rounded-2xl shadow-md text-center sidebar-widget" v-scroll-reveal>
-            <img src="https://picsum.photos/seed/avatar/150/150" alt="Avatar" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-white shadow-lg" />
-            <h3 class="text-xl font-bold text-ob-bright">您的名字</h3>
-            <p class="text-ob-dim mt-2 text-sm">在这里记录技术与生活的点滴。</p>
-            <div class="mt-6 flex justify-center gap-4">
-              <div class="text-center"><div class="font-bold text-ob-bright">文章</div><div class="text-sm text-ob-dim">42</div></div>
-              <div class="text-center"><div class="font-bold text-ob-bright">分类</div><div class="text-sm text-ob-dim">8</div></div>
-              <div class="text-center"><div class="font-bold text-ob-bright">标签</div><div class="text-sm text-ob-dim">24</div></div>
+        
+        <!-- 随笔区域锚点 -->
+        <div id="essays" class="relative -top-20 mt-16"></div>
+        <div class="mt-8 mb-4 flex items-center gap-4">
+          <h2 class="text-2xl font-bold text-ob-bright">随笔 Essays</h2>
+          <div class="flex-1 h-px bg-ob-deep-800"></div>
+        </div>
+        <div class="text-ob-dim mb-8">在这里记录生活的点点滴滴... (占位)</div>
+        
+        <!-- 画廊区域锚点 -->
+        <div id="gallery" class="relative -top-20 mt-16"></div>
+        <div class="mt-8 mb-4 flex items-center gap-4">
+          <h2 class="text-2xl font-bold text-ob-bright">画廊 Gallery</h2>
+          <div class="flex-1 h-px bg-ob-deep-800"></div>
+        </div>
+        <div class="bg-ob-deep-800 p-8 rounded-2xl shadow-md text-ob-dim text-center min-h-[150px] flex items-center justify-center">
+          <p>（画廊模块开发中，敬请期待...）</p>
+        </div>
+
+        <!-- 项目区域锚点 -->
+        <div id="projects" class="relative -top-20 mt-16"></div>
+        <div class="mt-8 mb-4 flex items-center gap-4">
+          <h2 class="text-2xl font-bold text-ob-bright">作品集 Projects</h2>
+          <div class="flex-1 h-px bg-ob-deep-800"></div>
+        </div>
+        
+        <div v-if="projectsLoading" class="text-center text-ob-dim py-10">加载中...</div>
+        <div v-else-if="projects.length === 0" class="bg-ob-deep-800 p-8 rounded-2xl shadow-md text-ob-dim text-center min-h-[150px] flex items-center justify-center">
+          <p>（暂无项目数据，请前往管理端添加...）</p>
+        </div>
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+          <div v-for="proj in projects" :key="proj.id" class="bg-ob-deep-800 p-6 rounded-2xl shadow-md flex flex-col transition-transform hover:-translate-y-1">
+            <h3 class="font-bold text-ob-bright text-lg mb-2">{{ proj.name }}</h3>
+            <p class="text-sm text-ob-dim flex-1 mb-4">{{ proj.description || '暂无描述' }}</p>
+            <div class="flex justify-between items-center text-sm font-medium border-t border-gray-700/50 pt-3 mt-auto">
+              <a v-if="proj.githubUrl" :href="proj.githubUrl" target="_blank" class="text-blue-400 hover:text-blue-300 flex items-center gap-1">Github 🔗</a>
+              <span v-else class="text-gray-500">无 Github</span>
+              
+              <a v-if="proj.downloadUrl" :href="proj.downloadUrl" target="_blank" class="text-green-400 hover:text-green-300 flex items-center gap-1">下载源码 ⬇</a>
+              <span v-else class="text-gray-500">无下载</span>
             </div>
           </div>
-
-          <div class="bg-ob-deep-800 p-6 rounded-2xl shadow-md sidebar-widget" v-scroll-reveal>
-            <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-ob-bright">
-              <span>📢 公告</span>
-            </h3>
-            <p class="text-sm text-ob-dim leading-relaxed">
-              欢迎来到我的温馨空间！目前前端样式正在按照邻家天使官网的风格进行二次元化重构中...
-            </p>
-          </div>
         </div>
+
+        <!-- 留言板区域锚点 -->
+        <div id="message" class="relative -top-20 mt-16"></div>
+        <div class="mt-8 mb-4 flex items-center gap-4">
+          <h2 class="text-2xl font-bold text-ob-bright">留言板 Message</h2>
+          <div class="flex-1 h-px bg-ob-deep-800"></div>
+        </div>
+        <MessageBoard />
+
+        <!-- 底部页脚区域 (Footer) -->
+        <div id="about" class="relative -top-20 mt-16"></div>
       </div>
     </div>
   </div>
@@ -88,19 +179,6 @@ onMounted(() => {
   margin: 0 auto;
   max-width: var(--max-width);
   padding: 0 1rem;
-}
-
-.main-grid {
-  display: flex;
-  flex-direction: column;
-}
-
-@media (min-width: 1024px) {
-  .main-grid {
-    display: grid;
-    gap: var(--gap);
-    grid-template-columns: minmax(0, 1fr) 320px;
-  }
 }
 
 .tab {

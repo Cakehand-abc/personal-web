@@ -20,6 +20,30 @@
           <el-input v-model="form.recordNumber" placeholder="例如：浙ICP备202xxxx号-1" size="large"></el-input>
         </el-form-item>
 
+        <!-- 头像设置 -->
+        <el-form-item label="站长头像 (Avatar)">
+          <div class="flex items-center gap-6">
+            <img :src="form.avatarUrl || 'https://picsum.photos/seed/avatar/150/150'" alt="Avatar" class="w-20 h-20 rounded-full shadow-md object-cover" />
+            <div class="flex-1">
+              <div class="flex w-full gap-4 mb-2">
+                <el-input v-model="form.avatarUrl" placeholder="输入头像直链，或在下方拖拽上传" size="large" class="flex-1"></el-input>
+                <el-button type="danger" size="large" @click="form.avatarUrl = ''" plain>清空</el-button>
+              </div>
+              <el-upload
+                class="w-full"
+                action="http://localhost:8080/api/admin/upload"
+                :headers="uploadHeaders"
+                :on-success="handleAvatarUploadSuccess"
+                :on-error="handleUploadError"
+                :show-file-list="false"
+                accept="image/*"
+              >
+                <el-button type="primary" plain>点击上传新头像</el-button>
+              </el-upload>
+            </div>
+          </div>
+        </el-form-item>
+
         <el-divider border-style="dashed">
           <span class="text-gray-400 font-normal">开场特效设置</span>
         </el-divider>
@@ -72,11 +96,42 @@
           <div class="flex w-full gap-4">
             <el-input v-model="form.introMediaUrl" readonly placeholder="留空则系统自动降级为纯 CSS 文字特效" size="large" class="flex-1">
               <template #append>
-                <el-button @click="previewMedia">预览</el-button>
+                <el-button @click="previewMedia(form.introMediaUrl)">预览</el-button>
               </template>
             </el-input>
             <el-button type="danger" size="large" @click="form.introMediaUrl = ''" plain>移除并恢复文字特效</el-button>
           </div>
+        </el-form-item>
+
+        <el-divider border-style="dashed">
+          <span class="text-gray-400 font-normal">文章默认封面配置</span>
+        </el-divider>
+
+        <el-form-item label="全局默认文章封面">
+          <div class="flex w-full gap-4 mb-4">
+            <el-input v-model="form.defaultCoverUrl" placeholder="输入图片直链，或在下方拖拽上传" size="large" class="flex-1">
+              <template #append>
+                <el-button @click="previewMedia(form.defaultCoverUrl)">预览</el-button>
+              </template>
+            </el-input>
+            <el-button type="danger" size="large" @click="form.defaultCoverUrl = ''" plain>清空</el-button>
+          </div>
+          
+          <el-upload
+            class="upload-demo w-full"
+            drag
+            action="http://localhost:8080/api/admin/upload"
+            :headers="uploadHeaders"
+            :on-success="handleCoverUploadSuccess"
+            :on-error="handleUploadError"
+            :show-file-list="false"
+            accept="image/*"
+          >
+            <el-icon class="el-icon--upload text-gray-400"><upload-filled /></el-icon>
+            <div class="el-upload__text text-gray-500 mt-4">
+              拖拽默认封面图到这里，或者 <em class="text-blue-500">点击上传</em>
+            </div>
+          </el-upload>
         </el-form-item>
 
         <!-- 保存按钮 -->
@@ -105,7 +160,9 @@ const form = reactive({
   recordNumber: '',
   introMediaType: 'image',
   introMediaUrl: '',
-  useOldIntro: false
+  useOldIntro: false,
+  defaultCoverUrl: '',
+  avatarUrl: ''
 })
 
 // 为 el-upload 绑定带有 Token 的请求头
@@ -140,13 +197,33 @@ const handleUploadError = () => {
   ElMessage.error('网络错误或文件过大导致上传失败')
 }
 
+// 默认封面上传成功回调
+const handleCoverUploadSuccess = (response: any) => {
+  if (response.code === 200) {
+    ElMessage.success('默认封面上传成功！')
+    form.defaultCoverUrl = response.data
+  } else {
+    ElMessage.error('上传失败：' + response.msg)
+  }
+}
+
+// 头像上传成功回调
+const handleAvatarUploadSuccess = (response: any) => {
+  if (response.code === 200) {
+    ElMessage.success('头像上传成功！')
+    form.avatarUrl = response.data
+  } else {
+    ElMessage.error('上传失败：' + response.msg)
+  }
+}
+
 // 预览媒体
-const previewMedia = () => {
-  if (!form.introMediaUrl) {
+const previewMedia = (url: string) => {
+  if (!url) {
     ElMessage.warning('暂无媒体文件可预览')
     return
   }
-  window.open(form.introMediaUrl, '_blank')
+  window.open(url, '_blank')
 }
 
 const saveSettings = async () => {
