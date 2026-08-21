@@ -5,32 +5,54 @@
 @import "./theme-variables.scss";
 @import "./article.scss";
 
-/* 强制使用浅色主题 */
+/* 全局基础设置 */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background-color: var(--background-primary);
+  background-color: var(--page-bg);
   color: var(--text-normal);
   transition: var(--theme-transition);
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
 }
 
-.theme-light {
-  /* 确保为纯白底色的浅色主题 */
-  --background-primary: #ffffff !important;
-  --background-secondary: #f9f9f9 !important;
-  --text-bright: #000000;
-  --text-normal: #333333;
+/* Firefly 自定义精致滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-/* 滚动渐显核心样式 (1.3s过渡，光影渲染) */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.70 0.05 var(--hue) / 0.35);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.70 0.14 var(--hue) / 0.65);
+}
+
+/* 选中文本高亮 */
+::selection {
+  background-color: var(--selection-bg);
+  color: var(--deep-text);
+}
+
+/* 滚动渐显动效 */
 .scroll-reveal-initial {
   opacity: 0;
-  transform: translateY(60px);
-  transition: opacity 1.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              transform 1.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              box-shadow 1.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  will-change: opacity, transform, box-shadow;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: opacity, transform;
 }
 
 .scroll-reveal-visible {
@@ -38,8 +60,38 @@ body {
   transform: translateY(0) !important;
 }
 
-/* 修复 Element Plus 样式 */
+/* Element Plus 适配 Firefly 主题色 */
 .el-button--primary {
-  background-color: var(--text-accent) !important;
-  border-color: var(--text-accent) !important;
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: #ffffff !important;
+}
+
+.el-button--primary:hover {
+  background-color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+}
+
+.el-input__wrapper.is-focus,
+.el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px var(--primary) inset !important;
+}
+
+/* 标签徽章常用类 */
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: var(--btn-regular-bg);
+  color: var(--btn-content);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: var(--primary);
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
 }

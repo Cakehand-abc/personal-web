@@ -1,75 +1,55 @@
 <template>
-  <footer class="w-full bg-[#FDFBF7] pt-12 pb-8 border-t border-[#EFEBE0] mt-16 text-[#5F5F5F] text-sm">
-    <div class="max-w-6xl mx-auto px-6">
+  <footer class="w-full mt-16 pb-12 pt-8 text-xs text-(--text-dim) border-t border-dashed border-(--line-divider) select-none">
+    <div class="max-w-5xl mx-auto px-6 flex flex-col items-center justify-center text-center gap-3">
       
-      <!-- Top Section -->
-      <div class="flex flex-wrap items-center gap-6 mb-12">
-        <span class="font-bold text-lg text-[#181818]">关注我们</span>
-        <div class="flex gap-6 text-xl text-[#888]">
-          <!-- 使用文字代替具体 Icon，因为需要纯净和快速构建 -->
-          <span class="cursor-pointer hover:text-[#181818] transition-colors font-bold">WeChat</span>
-          <span class="cursor-pointer hover:text-[#181818] transition-colors font-bold">Weibo</span>
-          <span class="cursor-pointer hover:text-[#181818] transition-colors font-bold">X</span>
-          <span class="cursor-pointer hover:text-[#181818] transition-colors font-bold">LinkedIn</span>
-        </div>
+      <!-- 装饰徽章 -->
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        <span class="px-2.5 py-1 rounded-full bg-(--btn-regular-bg) text-(--btn-content) font-medium flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+          <span>运行良好 · 持续守护中</span>
+        </span>
+        <span class="px-2.5 py-1 rounded-full bg-(--btn-regular-bg) text-(--btn-content) font-medium">
+          已运行 {{ uptimeDays }} 天
+        </span>
       </div>
 
-      <!-- Links Section -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-        <div>
-          <h3 class="font-bold text-[#181818] mb-4">加入我们</h3>
-          <ul class="space-y-3">
-            <li class="cursor-pointer hover:text-[#181818] transition-colors">社会招聘</li>
-            <li class="cursor-pointer hover:text-[#181818] transition-colors">校园招聘</li>
-            <li class="cursor-pointer hover:text-[#181818] transition-colors">国际招聘</li>
-          </ul>
-        </div>
-        <div>
-          <h3 class="font-bold text-[#181818] mb-4">联系我们</h3>
-          <ul class="space-y-3">
-            <li class="cursor-pointer hover:text-[#181818] transition-colors">客户服务</li>
-            <li class="cursor-pointer hover:text-[#181818] transition-colors">合作洽谈</li>
-            <li class="cursor-pointer hover:text-[#181818] transition-colors">博客采购</li>
-            <li class="cursor-pointer hover:text-[#181818] transition-colors">媒体及投资者</li>
-          </ul>
-        </div>
-        <div>
-          <h3 class="font-bold text-[#181818] mb-4">法律信息</h3>
-          <ul class="space-y-3">
-            <li class="cursor-pointer hover:text-[#181818] transition-colors">服务协议</li>
-            <li class="cursor-pointer hover:text-[#181818] transition-colors">隐私政策</li>
-          </ul>
-        </div>
-        <div class="flex items-center justify-center md:justify-end">
-          <span class="text-3xl font-bold tracking-wider text-[#181818] italic">MyBlog 博客</span>
-        </div>
+      <!-- 版权与建站信息 -->
+      <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-(--text-normal)">
+        <span>&copy; {{ currentYear }} <strong class="text-(--text-bright)">{{ settingStore.siteName ? settingStore.siteName.split(' ')[0] : 'Firefly' }}</strong>. All Rights Reserved.</span>
+        <span>/</span>
+        <a href="#home" class="hover:text-(--primary) transition-colors">返回顶部</a>
+        <span>/</span>
+        <a href="#about" class="hover:text-(--primary) transition-colors">关于本站</a>
+        <span v-if="settingStore.recordNumber">/</span>
+        <span v-if="settingStore.recordNumber">{{ settingStore.recordNumber }}</span>
       </div>
 
-      <!-- Bottom Section -->
-      <div class="text-xs space-y-2 text-[#999999] flex flex-col items-start gap-4 border-t border-[#EFEBE0] pt-6">
-        <div class="space-x-4 flex flex-wrap gap-y-2">
-          <a href="#" class="hover:text-[#5F5F5F] transition-colors">法律声明</a>
-          <a href="#" class="hover:text-[#5F5F5F] transition-colors">阳光准则</a>
-          <a href="#" class="hover:text-[#5F5F5F] transition-colors">网站地图</a>
-          <a href="#" class="hover:text-[#5F5F5F] transition-colors">粤网文[2026]2882-203号</a>
-          <a href="#" class="hover:text-[#5F5F5F] transition-colors">粤B2-20090059-1</a>
-        </div>
-        <div>
-          Copyright © 1998 - 2026 MyBlog. All Rights Reserved. 博客公司 版权所有
-        </div>
+      <!-- 技术致谢与框架信息 -->
+      <div class="flex items-center justify-center gap-1.5 text-[11px] text-(--text-dim)">
+        <span>Powered by</span>
+        <span class="text-(--primary) font-semibold">Vue 3</span>
+        <span>&amp;</span>
+        <span class="text-(--primary) font-semibold">Firefly Theme</span>
       </div>
 
+      <!-- 寄语 -->
+      <div class="text-[11px] text-(--text-dim) italic opacity-80 mt-1">
+        “大切な人といつかまた巡り会えますように”
+      </div>
     </div>
   </footer>
 </template>
 
 <script setup lang="ts">
-// 纯展示组件，无需逻辑
-</script>
+import { computed } from 'vue'
+import { useSettingStore } from '../store/setting'
 
-<style scoped>
-/* 继承古典字体风格 */
-footer {
-  font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
-}
-</style>
+const settingStore = useSettingStore()
+const currentYear = new Date().getFullYear()
+
+const uptimeDays = computed(() => {
+  const start = new Date('2026-01-01').getTime()
+  const now = new Date().getTime()
+  return Math.max(1, Math.floor((now - start) / (1000 * 60 * 60 * 24)))
+})
+</script>

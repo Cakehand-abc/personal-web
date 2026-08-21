@@ -5,6 +5,7 @@ import request from '../utils/request'
 export const useSettingStore = defineStore('setting', () => {
   const siteName = ref('加载中...')
   const siteSignature = ref('')
+  const avatarUrl = ref('')
   const introMediaType = ref('image')
   const introMediaUrl = ref('')
   const recordNumber = ref('')
@@ -17,6 +18,7 @@ export const useSettingStore = defineStore('setting', () => {
       if (res.code === 200 && res.data) {
         siteName.value = res.data.siteName || 'MyBlog ciallo～(∠・ω< )⌒☆'
         siteSignature.value = res.data.siteSignature || 'Hello World'
+        avatarUrl.value = res.data.avatarUrl || ''
         introMediaType.value = res.data.introMediaType || 'image'
         introMediaUrl.value = res.data.introMediaUrl || ''
         recordNumber.value = res.data.recordNumber || ''
@@ -32,7 +34,7 @@ export const useSettingStore = defineStore('setting', () => {
   }
 
   return { 
-    siteName, siteSignature, introMediaType, introMediaUrl, recordNumber, useOldIntro, defaultCoverUrl,
+    siteName, siteSignature, avatarUrl, introMediaType, introMediaUrl, recordNumber, useOldIntro, defaultCoverUrl,
     fetchSettings 
   }
 })

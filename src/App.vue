@@ -4,9 +4,11 @@ import { RouterView, useRoute } from 'vue-router'
 import SideNav from './components/SideNav.vue'
 import GlobalFooter from './components/Footer.vue'
 import { useSettingStore } from './store/setting'
+import { useThemeStore } from './store/theme'
 
 const route = useRoute()
 const settingStore = useSettingStore()
+const themeStore = useThemeStore()
 
 // 判断是否为前台路由（不包含 /admin 和 /oauth2）
 const isPublicRoute = computed(() => {
@@ -26,12 +28,13 @@ const handleVisibilityChange = () => {
 }
 
 onMounted(async () => {
-  // 首先拉取后台的全局设置！
+  // 初始化全局设置与主题引擎
   await settingStore.fetchSettings()
+  themeStore.applyTheme()
 
   // 设置动态标题监听
   document.addEventListener('visibilitychange', handleVisibilityChange)
-  handleVisibilityChange() // 初始化设置
+  handleVisibilityChange()
 
   // 如果不是前台页面，直接不看动画了
   if (!isPublicRoute.value) {
@@ -41,9 +44,8 @@ onMounted(async () => {
 
   // 禁止整个页面的滚动，强制看完动画
   document.body.style.overflow = 'hidden'
-  document.body.classList.add('theme-light') // 确保应用浅色主题
 
-  // 统一开场动画时间为 3 秒 (3000ms)，以配合全新的 SVG 流金动画节奏
+  // 统一开场动画时间为 3 秒 (3000ms)，以配合横向 SVG 流金动画节奏
   const introDuration = 3000
 
   setTimeout(() => {
@@ -86,27 +88,26 @@ onUnmounted(() => {
       alt="Intro Image" 
     />
 
-    <!-- 3. 如果后台设置了使用旧版“Welcome”动画（预留给未来的后台开关） -->
+    <!-- 3. 如果后台设置了使用旧版“Welcome”动画 -->
     <div v-else-if="settingStore.useOldIntro" class="logo-wrapper relative z-10" :class="{ 'fade-in': showLogo }">
       <h1 class="anime-logo-text text-4xl md:text-6xl font-bold tracking-wider">
         Welcome To My Blog
       </h1>
     </div>
 
-    <!-- 4. 默认兜底动画：全新的横向 SVG 流金岁月动画 -->
+    <!-- 4. 默认兜底动画：横向 SVG 流金岁月动画 -->
     <div v-else class="svg-intro-wrapper absolute w-full h-full flex justify-center items-center">
-      <!-- 使用 object 引入，确保 SVG 内部的 CSS 动画能正常播放 -->
       <object data="/gemini-svg-horizontal.svg?v=20" type="image/svg+xml" class="w-full max-w-4xl px-4 md:px-10"></object>
     </div>
   </div>
 
   <!-- 全局布局：前台采用左侧导航 + 右侧主内容 -->
-  <div v-if="isPublicRoute" class="flex min-h-screen bg-[#FDFBF7]">
-    <!-- 左侧固定导航栏 -->
+  <div v-if="isPublicRoute" class="flex min-h-screen bg-(--page-bg) transition-colors duration-300">
+    <!-- 左侧固定导航栏 (保留) -->
     <SideNav />
     
-    <!-- 右侧主内容区域 (避开左侧导航栏的宽度) -->
-    <main class="main-content flex flex-col">
+    <!-- 右侧主内容区域 (避开左侧导航栏的宽度 190px) -->
+    <main class="main-content flex flex-col flex-1 min-h-screen">
       <div class="flex-1">
         <RouterView />
       </div>
@@ -160,7 +161,7 @@ onUnmounted(() => {
 
 .intro-media {
   opacity: 0;
-  transform: scale(1.05); /* 微微放大，制造景深感 */
+  transform: scale(1.05);
   transition: opacity 2s ease, transform 3s ease-out;
 }
 
@@ -170,10 +171,10 @@ onUnmounted(() => {
 }
 
 .anime-logo-text {
-  color: #e94560; /* 温馨的二次元主题粉红色 */
+  color: var(--primary);
   font-family: 'Inter', sans-serif;
   text-shadow: 0 4px 12px rgba(233, 69, 96, 0.3);
-  background: linear-gradient(130deg, #e94560, #ff8787);
+  background: linear-gradient(130deg, var(--primary), var(--text-sub-accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
