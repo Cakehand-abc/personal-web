@@ -5,6 +5,7 @@ import SideNav from './components/SideNav.vue'
 import GlobalFooter from './components/Footer.vue'
 import { useSettingStore } from './store/setting'
 import { useThemeStore } from './store/theme'
+import { siteConfig } from './config'
 
 const route = useRoute()
 const settingStore = useSettingStore()
@@ -23,7 +24,7 @@ const handleVisibilityChange = () => {
   if (document.hidden) {
     document.title = '别走好不好(╥╯^╰╥)'
   } else {
-    document.title = settingStore.siteName
+    document.title = siteConfig.title || settingStore.siteName || 'Firefly · 流萤'
   }
 }
 

@@ -1,115 +1,115 @@
 <template>
-  <div class="firefly-home-page w-full min-h-screen">
-    <!-- 樱花粒子特效 (根据设置开关) -->
+  <div class="firefly-home w-full min-h-screen">
+    <!-- 樱花飘落动效 -->
     <SakuraEffect />
 
-    <!-- 顶部 Firefly 横幅与波浪 (对应 #home 锚点) -->
-    <div id="home">
+    <!-- 1. 顶部全宽 Firefly 巨幅横幅 Banner (对应 #home 锚点) -->
+    <section id="home" class="scroll-mt-0">
       <FireflyBanner />
-    </div>
+    </section>
 
-    <!-- 主页面内容区域 (双栏布局) -->
+    <!-- 2. 主体双栏区域 (左侧主信息流 + 右侧吸顶小组件栏) -->
     <div class="max-w-[1400px] mx-auto px-4 md:px-6 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-8 items-start">
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_320px] gap-8 items-start">
         
-        <!-- 左侧主内容流 -->
-        <div class="main-content-flow flex flex-col gap-10 min-w-0">
+        <!-- 左侧主内容信息流 -->
+        <div class="main-stream-column flex flex-col gap-12 min-w-0">
           
-          <!-- 1. 精选文章区域 (对应 #featured 锚点) -->
+          <!-- 1. 编辑精选区域 (对应 #featured 锚点) -->
           <div id="featured" class="scroll-mt-6">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-2">
-                <span class="text-xl">⭐</span>
-                <h2 class="text-xl md:text-2xl font-bold text-(--text-bright)">精选推荐 Featured</h2>
+                <span class="text-xl">🌟</span>
+                <h2 class="text-xl md:text-2xl font-bold text-(--text-bright)">编辑精选 Featured</h2>
               </div>
-              <span class="text-xs text-(--text-dim)">精选优质文章</span>
+              <span class="text-xs text-(--text-dim)">精选优质博文</span>
             </div>
 
-            <!-- 精选文章卡片展示 -->
-            <div v-if="loading" class="text-center py-8 text-sm text-(--text-dim)">
-              加载精选内容中...
-            </div>
-            <div v-else-if="featuredArticles.length === 0" class="card-base p-6 text-center text-xs text-(--text-dim)">
-              暂无精选推荐文章
+            <!-- 精选文章网格 -->
+            <div v-if="featuredArticles.length === 0" class="card-base p-8 text-center text-xs text-(--text-dim)">
+              暂无精选文章～
             </div>
             <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div v-for="item in featuredArticles" :key="'feat-' + item.id">
-                <ArticleCard :data="item" :grid="true" />
-              </div>
+              <ArticleCard 
+                v-for="article in featuredArticles" 
+                :key="'feat-' + article.id" 
+                :data="article" 
+                layout="grid"
+              />
             </div>
           </div>
 
-          <!-- 2. 全部文章区域 (对应 #articles 锚点) -->
+          <!-- 2. 全部文章列表区域 (对应 #articles 锚点) -->
           <div id="articles" class="scroll-mt-6">
             <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
               <div class="flex items-center gap-2">
                 <span class="text-xl">📚</span>
                 <h2 class="text-xl md:text-2xl font-bold text-(--text-bright)">全部文章 Articles</h2>
-                <span class="text-xs px-2 py-0.5 rounded-full bg-(--primary)/15 text-(--primary) font-bold">
-                  {{ filteredArticles.length }}
+                <span class="text-xs px-2.5 py-0.5 rounded-full bg-(--btn-regular-bg) text-(--btn-content) font-bold">
+                  {{ filteredArticles.length }} 篇
                 </span>
               </div>
 
-              <!-- 列表 / 网格布局切换按钮 -->
-              <div class="flex items-center gap-1.5 p-1 rounded-xl bg-(--card-bg) border border-(--line-divider) shadow-sm">
+              <!-- 列表 / 网格视图切换开关 -->
+              <div class="flex items-center gap-1.5 p-1 rounded-xl bg-(--btn-regular-bg) border border-(--line-divider) text-xs">
                 <button 
-                  @click="themeStore.setPostLayout('list')"
-                  class="p-1.5 rounded-lg text-xs font-medium transition-colors"
+                  @click="themeStore.setPostLayout('list')" 
+                  class="px-2.5 py-1 rounded-lg transition-all font-medium flex items-center gap-1"
                   :class="themeStore.postLayout === 'list' ? 'bg-(--primary) text-white shadow-sm' : 'text-(--text-dim) hover:text-(--text-bright)'"
                   title="列表视图"
                 >
-                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+                  <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+                  <span class="hidden sm:inline">列表</span>
                 </button>
                 <button 
-                  @click="themeStore.setPostLayout('grid')"
-                  class="p-1.5 rounded-lg text-xs font-medium transition-colors"
+                  @click="themeStore.setPostLayout('grid')" 
+                  class="px-2.5 py-1 rounded-lg transition-all font-medium flex items-center gap-1"
                   :class="themeStore.postLayout === 'grid' ? 'bg-(--primary) text-white shadow-sm' : 'text-(--text-dim) hover:text-(--text-bright)'"
                   title="网格视图"
                 >
-                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M4 4h7v7H4zm9 0h7v7h-7zm0 9h7v7h-7zm-9 0h7v7H4z"/></svg>
+                  <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M4 4h7v7H4zm9 0h7v7h-7zm-9 9h7v7H4zm9 0h7v7h-7z"/></svg>
+                  <span class="hidden sm:inline">网格</span>
                 </button>
               </div>
             </div>
 
-            <!-- 分类筛选横条 (Firefly 胶囊风格) -->
-            <div class="flex flex-wrap gap-2 mb-6 items-center">
+            <!-- 分类筛选小标签栏 -->
+            <div v-if="categoryList.length > 0" class="flex flex-wrap gap-2 mb-4">
               <button 
                 @click="selectedCategory = ''" 
-                class="px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all"
-                :class="selectedCategory === '' 
-                  ? 'bg-(--primary) text-white shadow-sm shadow-(--primary)/25' 
-                  : 'bg-(--card-bg) border border-(--line-divider) text-(--text-normal) hover:border-(--primary)/40'"
+                class="px-3 py-1 rounded-full text-xs font-semibold transition-all"
+                :class="selectedCategory === '' ? 'bg-(--primary) text-white shadow-sm' : 'btn-regular text-(--text-normal)'"
               >
-                全部 ({{ articles.length }})
+                全部
               </button>
               <button 
                 v-for="cat in categoryList" 
                 :key="cat.name"
                 @click="selectedCategory = cat.name"
-                class="px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5"
-                :class="selectedCategory === cat.name 
-                  ? 'bg-(--primary) text-white shadow-sm shadow-(--primary)/25' 
-                  : 'bg-(--card-bg) border border-(--line-divider) text-(--text-normal) hover:border-(--primary)/40'"
+                class="px-3 py-1 rounded-full text-xs font-semibold transition-all"
+                :class="selectedCategory === cat.name ? 'bg-(--primary) text-white shadow-sm' : 'btn-regular text-(--text-normal)'"
               >
-                <span>{{ cat.name }}</span>
-                <span class="text-[10px] opacity-75">({{ cat.count }})</span>
+                {{ cat.name }} ({{ cat.count }})
               </button>
             </div>
 
-            <!-- 文章列表 -->
-            <div v-if="loading" class="text-center py-12 text-sm text-(--text-dim)">
-              正在获取文章列表...
+            <!-- 文章列表主体渲染 -->
+            <div v-if="loading" class="flex justify-center items-center py-16 text-sm text-(--text-dim)">
+              正在加载文章中...
             </div>
-            <div v-else-if="filteredArticles.length === 0" class="card-base p-10 text-center text-sm text-(--text-dim)">
-              该分类下暂无文章，稍后再来看看吧～
+            <div v-else-if="filteredArticles.length === 0" class="card-base p-8 text-center text-xs text-(--text-dim)">
+              该分类下暂无文章～
             </div>
             <div 
               v-else 
               :class="themeStore.postLayout === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-5' : 'flex flex-col gap-4'"
             >
-              <div v-for="article in filteredArticles" :key="article.id">
-                <ArticleCard :data="article" :grid="themeStore.postLayout === 'grid'" />
-              </div>
+              <ArticleCard 
+                v-for="article in filteredArticles" 
+                :key="article.id" 
+                :data="article" 
+                :layout="themeStore.postLayout"
+              />
             </div>
           </div>
 
@@ -117,27 +117,28 @@
           <div id="essays" class="scroll-mt-6">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-2">
-                <span class="text-xl">☕</span>
-                <h2 class="text-xl md:text-2xl font-bold text-(--text-bright)">随笔动态 Essays</h2>
+                <span class="text-xl">🍃</span>
+                <h2 class="text-xl md:text-2xl font-bold text-(--text-bright)">日常随笔 Essays</h2>
               </div>
-              <span class="text-xs text-(--text-dim)">瞬间的灵感与日常</span>
+              <span class="text-xs text-(--text-dim)">记录灵感与生活的切片</span>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div v-for="(essay, idx) in essaysList" :key="idx" class="card-base p-5 flex flex-col justify-between" v-scroll-reveal>
-                <div>
-                  <div class="flex items-center justify-between text-xs text-(--text-dim) mb-2">
-                    <span class="font-bold text-(--primary) flex items-center gap-1">
-                      <span>✨</span> {{ essay.tag }}
-                    </span>
-                    <span>{{ essay.date }}</span>
-                  </div>
-                  <p class="text-xs md:text-sm text-(--text-normal) leading-relaxed">
-                    {{ essay.content }}
-                  </p>
+            <!-- 随笔卡片流 -->
+            <div class="flex flex-col gap-4">
+              <div 
+                v-for="(essay, idx) in essaysList" 
+                :key="idx" 
+                class="card-base p-5 transition-all duration-300 hover:scale-[1.01]"
+                v-scroll-reveal
+              >
+                <div class="flex items-center justify-between text-xs text-(--text-dim) mb-2">
+                  <span class="font-bold text-(--primary)"># {{ essay.tag }}</span>
+                  <span>{{ essay.date }}</span>
                 </div>
-                <div class="mt-4 pt-2 border-t border-(--line-divider) flex items-center justify-between text-[11px] text-(--text-dim)">
-                  <span>📍 {{ essay.location }}</span>
+                <p class="text-xs md:text-sm text-(--text-normal) leading-relaxed">
+                  {{ essay.content }}
+                </p>
+                <div class="mt-3 flex items-center gap-4 text-xs text-(--text-dim)">
                   <span>❤️ {{ essay.likes }} 喜欢</span>
                 </div>
               </div>
@@ -187,12 +188,12 @@
             <div v-if="projectsLoading" class="text-center py-8 text-sm text-(--text-dim)">
               获取作品集中...
             </div>
-            <div v-else-if="projects.length === 0" class="card-base p-8 text-center text-xs text-(--text-dim)">
+            <div v-else-if="displayProjects.length === 0" class="card-base p-8 text-center text-xs text-(--text-dim)">
               暂无作品数据，请在后台添加～
             </div>
             <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div 
-                v-for="proj in projects" 
+                v-for="proj in displayProjects" 
                 :key="proj.id" 
                 class="card-base p-5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1"
                 v-scroll-reveal
@@ -245,11 +246,27 @@
               这是一个由 Vue 3 + TypeScript 构建，深度融合 Firefly（流萤）清新美学设计的个人空间。
               在此记录技术探索、架构思考与日常生活，愿每一段代码都能如夏夜流萤般照亮前行的路。
             </p>
+            
+            <!-- 开源致谢与版权声明 -->
+            <div class="p-3.5 mb-4 rounded-xl bg-(--btn-regular-bg) border border-(--line-divider) text-xs text-(--text-dim)">
+              <p class="font-semibold text-(--text-bright) mb-1 flex items-center gap-1.5">
+                <span>🍀</span>
+                <span>开源致谢 / Open Source Attribution</span>
+              </p>
+              <p class="leading-relaxed">
+                本站主题界面与交互设计参考并适配自优秀开源项目 
+                <a href="https://github.com/CuteLeaf/Firefly" target="_blank" rel="noopener" class="text-(--primary) font-semibold hover:underline">CuteLeaf/Firefly</a>
+                与 
+                <a href="https://github.com/saicaca/fuwari" target="_blank" rel="noopener" class="text-(--primary) font-semibold hover:underline">saicaca/fuwari</a>，
+                遵循 MIT 开源许可协议。流萤相关素材版权归属米哈游《崩坏：星穹铁道》。
+              </p>
+            </div>
+
             <div class="flex flex-wrap gap-2 text-xs">
               <span class="tag-badge">Vue 3</span>
               <span class="tag-badge">TypeScript</span>
               <span class="tag-badge">TailwindCSS</span>
-              <span class="tag-badge">Firefly Aesthetic</span>
+              <span class="tag-badge">Firefly Theme</span>
               <span class="tag-badge">Spring Boot</span>
             </div>
           </div>
@@ -260,16 +277,20 @@
         <aside class="sidebar-widgets-column flex flex-col gap-6 lg:sticky lg:top-6">
           <!-- 1. 个人资料卡 -->
           <ProfileWidget 
+            v-if="sidebarConfig.widgets.profile"
             :article-count="articles.length"
             :category-count="categoryList.length"
             :tag-count="tagList.length"
           />
 
           <!-- 2. 公告栏 -->
-          <AnnouncementWidget />
+          <AnnouncementWidget 
+            v-if="sidebarConfig.widgets.announcement"
+          />
 
           <!-- 3. 文章分类 -->
           <CategoriesWidget 
+            v-if="sidebarConfig.widgets.categories"
             :categories="categoryList" 
             :active-category="selectedCategory"
             @select="cat => selectedCategory = (selectedCategory === cat ? '' : cat)"
@@ -277,22 +298,24 @@
 
           <!-- 4. 热门标签云 -->
           <TagsWidget 
+            v-if="sidebarConfig.widgets.tags"
             :tags="tagList" 
             :active-tag="selectedTag"
             @select="tag => selectedTag = (selectedTag === tag ? '' : tag)"
           />
 
-          <!-- 5. 站点统计信息 -->
+          <!-- 5. 站点统计 -->
           <SiteStatsWidget 
-            :article-count="articles.length"
-            :total-words="calculatedTotalWords"
+            v-if="sidebarConfig.widgets.siteStats"
+            :article-count="articles.length" 
+            :total-words="calculatedTotalWords" 
           />
         </aside>
 
       </div>
     </div>
 
-    <!-- 右下角悬浮控制按钮组 -->
+    <!-- 右下角悬浮控制按钮组 (Back to Top / 亮暗切换 / 色相调节 / 樱花开关) -->
     <FloatingControls />
   </div>
 </template>
@@ -312,6 +335,12 @@ import TagsWidget from '../components/widgets/TagsWidget.vue'
 import SiteStatsWidget from '../components/widgets/SiteStatsWidget.vue'
 import { useThemeStore } from '../store/theme'
 import { activeSection } from '../store/navState'
+import { 
+  sidebarConfig, 
+  galleryConfig, 
+  dynamicConfig, 
+  projectsConfig 
+} from '../config'
 
 const themeStore = useThemeStore()
 
@@ -348,6 +377,12 @@ const fetchProjects = async () => {
     projectsLoading.value = false
   }
 }
+
+// 作品集：优先展示后端数据，若后端为空则降级为 projectsConfig 静态配置
+const displayProjects = computed(() => {
+  if (projects.value.length > 0) return projects.value
+  return projectsConfig
+})
 
 // 精选推荐文章 (过滤 isFeatured 或前 2 篇)
 const featuredArticles = computed(() => {
@@ -412,57 +447,11 @@ const calculatedTotalWords = computed(() => {
   return Math.max(3400, count)
 })
 
-// 随笔动态数据
-const essaysList = [
-  {
-    tag: '前端思考',
-    date: '2026.07.15',
-    content: '今天把个人博客整体换成了 Firefly 流萤风格，OKLCH 色彩空间与毛玻璃卡片的结合确实带来了超清新的质感！',
-    location: '深圳 · 科技园',
-    likes: 12
-  },
-  {
-    tag: '生活随笔',
-    date: '2026.06.28',
-    content: '夏夜微风拂过，抬头仰望星空，仿佛能看到漫天飞舞的流萤。愿我们都能在热爱的代码世界里找到光芒。',
-    location: '广州 · 珠江边',
-    likes: 8
-  }
-]
+// 随笔动态数据（从 config/dynamicConfig 导入）
+const essaysList = dynamicConfig
 
-// 画廊相册数据
-const galleryImages = [
-  {
-    url: '/assets/images/DesktopWallpaper/d1.avif',
-    title: '星空流萤',
-    desc: '漫天星辰下的轻声低语'
-  },
-  {
-    url: '/assets/images/DesktopWallpaper/d2.avif',
-    title: '林间微光',
-    desc: '阳光穿过树梢的宁静午后'
-  },
-  {
-    url: '/assets/images/DesktopWallpaper/d3.avif',
-    title: '暮光之城',
-    desc: '夕阳染红云层的梦幻时刻'
-  },
-  {
-    url: '/assets/images/DesktopWallpaper/d4.avif',
-    title: '静谧湖畔',
-    desc: '倒映着无垠星夜的清澈湖水'
-  },
-  {
-    url: '/assets/images/DesktopWallpaper/d5.avif',
-    title: '飞萤之约',
-    desc: '向着晨曦与光芒奔赴'
-  },
-  {
-    url: '/assets/images/DesktopWallpaper/d6.avif',
-    title: '繁星璀璨',
-    desc: '宇宙浩瀚，我们都是星尘'
-  }
-]
+// 画廊相册数据（从 config/galleryConfig 导入）
+const galleryImages = galleryConfig
 
 // ScrollSpy 滚动监听与 SideNav 联动
 let scrollHandler: any = null

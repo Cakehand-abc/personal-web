@@ -2,14 +2,15 @@
   <canvas 
     v-if="themeStore.sakuraEnabled" 
     ref="sakuraCanvas" 
-    class="fixed inset-0 pointer-events-none z-10 w-full h-full"
-    style="transform: translateZ(0);"
+    class="fixed inset-0 pointer-events-none w-full h-full"
+    :style="{ zIndex: effectsConfig.sakura.zIndex, transform: 'translateZ(0)' }"
   ></canvas>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useThemeStore } from '../../store/theme'
+import { effectsConfig } from '../../config'
 
 const themeStore = useThemeStore()
 const sakuraCanvas = ref<HTMLCanvasElement | null>(null)
@@ -28,23 +29,29 @@ interface SakuraItem {
 let animationId: number | null = null
 let sakuraList: SakuraItem[] = []
 let sakuraImg: HTMLImageElement | null = null
-const SAKURA_NUM = 24
+
+const cfg = effectsConfig.sakura
 
 const createSakura = (width: number, height: number): SakuraItem => {
+  const sizeRange = cfg.size.max - cfg.size.min
+  const opacityRange = cfg.opacity.max - cfg.opacity.min
+  const hSpeedRange = cfg.speed.horizontal.max - cfg.speed.horizontal.min
+  const vSpeedRange = cfg.speed.vertical.max - cfg.speed.vertical.min
+
   return {
     x: Math.random() * width,
     y: Math.random() * height,
-    s: 0.4 + Math.random() * 0.6,
+    s: cfg.size.min + Math.random() * sizeRange,
     r: Math.random() * 6,
-    fnx: -0.5 + Math.random() * 1.5,
-    fny: 1.0 + Math.random() * 1.8,
-    fnr: 0.01 + Math.random() * 0.02,
-    a: 0.3 + Math.random() * 0.6
+    fnx: cfg.speed.horizontal.min + Math.random() * hSpeedRange,
+    fny: cfg.speed.vertical.min + Math.random() * vSpeedRange,
+    fnr: cfg.speed.rotation,
+    a: cfg.opacity.min + Math.random() * opacityRange
   }
 }
 
 const initSakura = () => {
-  if (!themeStore.sakuraEnabled) return
+  if (!themeStore.sakuraEnabled || !cfg.enable) return
   
   const img = new Image()
   img.src = '/assets/images/effects/sakura.png'
@@ -57,7 +64,7 @@ const initSakura = () => {
     canvas.height = window.innerHeight
     
     sakuraList = []
-    for (let i = 0; i < SAKURA_NUM; i++) {
+    for (let i = 0; i < cfg.sakuraNum; i++) {
       sakuraList.push(createSakura(canvas.width, canvas.height))
     }
     

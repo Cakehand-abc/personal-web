@@ -31,6 +31,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { siteConfig } from '../../config'
 
 const props = withDefaults(
   defineProps<{
@@ -41,12 +42,13 @@ const props = withDefaults(
   {
     articleCount: 2,
     totalWords: 3420,
-    startDate: '2026-01-01'
+    startDate: ''
   }
 )
 
 const runningDays = computed(() => {
-  const start = new Date(props.startDate).getTime()
+  const dateStr = props.startDate || siteConfig.siteStartDate || '2026-01-01'
+  const start = new Date(dateStr).getTime()
   const now = new Date().getTime()
   const diff = Math.max(1, Math.floor((now - start) / (1000 * 60 * 60 * 24)))
   return diff

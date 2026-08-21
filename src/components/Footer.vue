@@ -1,5 +1,5 @@
 <template>
-  <footer class="w-full mt-16 pb-12 pt-8 text-xs text-(--text-dim) border-t border-dashed border-(--line-divider) select-none">
+  <footer v-if="footerConfig.enable" class="w-full mt-16 pb-12 pt-8 text-xs text-(--text-dim) border-t border-dashed border-(--line-divider) select-none">
     <div class="max-w-5xl mx-auto px-6 flex flex-col items-center justify-center text-center gap-3">
       
       <!-- 装饰徽章 -->
@@ -15,7 +15,7 @@
 
       <!-- 版权与建站信息 -->
       <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-(--text-normal)">
-        <span>&copy; {{ currentYear }} <strong class="text-(--text-bright)">{{ settingStore.siteName ? settingStore.siteName.split(' ')[0] : 'Firefly' }}</strong>. All Rights Reserved.</span>
+        <span>&copy; {{ currentYear }} <strong class="text-(--text-bright)">{{ displayName }}</strong>. All Rights Reserved.</span>
         <span>/</span>
         <a href="#home" class="hover:text-(--primary) transition-colors">返回顶部</a>
         <span>/</span>
@@ -24,17 +24,36 @@
         <span v-if="settingStore.recordNumber">{{ settingStore.recordNumber }}</span>
       </div>
 
-      <!-- 技术致谢与框架信息 -->
-      <div class="flex items-center justify-center gap-1.5 text-[11px] text-(--text-dim)">
+      <!-- 开源致谢与声明 -->
+      <div class="flex flex-wrap items-center justify-center gap-1.5 text-[11px] text-(--text-dim)">
         <span>Powered by</span>
         <span class="text-(--primary) font-semibold">Vue 3</span>
-        <span>&amp;</span>
-        <span class="text-(--primary) font-semibold">Firefly Theme</span>
+        <span v-if="footerConfig.poweredBy.firefly">&amp;</span>
+        <a 
+          v-if="footerConfig.poweredBy.firefly"
+          href="https://github.com/CuteLeaf/Firefly" 
+          target="_blank" 
+          rel="noopener" 
+          class="text-(--primary) font-semibold hover:underline"
+        >
+          Firefly Theme
+        </a>
+        <span v-if="footerConfig.poweredBy.fuwari">(Inspired by</span>
+        <a 
+          v-if="footerConfig.poweredBy.fuwari"
+          href="https://github.com/saicaca/fuwari" 
+          target="_blank" 
+          rel="noopener" 
+          class="text-(--primary) hover:underline"
+        >
+          fuwari
+        </a>
+        <span v-if="footerConfig.poweredBy.fuwari">)</span>
       </div>
 
       <!-- 寄语 -->
       <div class="text-[11px] text-(--text-dim) italic opacity-80 mt-1">
-        “大切な人といつかまた巡り会えますように”
+        {{ footerConfig.quote }}
       </div>
     </div>
   </footer>
@@ -43,12 +62,21 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useSettingStore } from '../store/setting'
+import { footerConfig, siteConfig } from '../config'
 
 const settingStore = useSettingStore()
 const currentYear = new Date().getFullYear()
 
+const displayName = computed(() => {
+  if (settingStore.siteName) {
+    return settingStore.siteName.split(' ')[0]
+  }
+  return siteConfig.author || 'Firefly'
+})
+
 const uptimeDays = computed(() => {
-  const start = new Date('2026-01-01').getTime()
+  const startDateStr = footerConfig.siteStartDate || siteConfig.siteStartDate || '2026-01-01'
+  const start = new Date(startDateStr).getTime()
   const now = new Date().getTime()
   return Math.max(1, Math.floor((now - start) / (1000 * 60 * 60 * 24)))
 })

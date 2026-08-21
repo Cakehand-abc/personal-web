@@ -99,7 +99,7 @@
                 <span>版权声明 / License</span>
               </div>
               <div class="flex flex-col gap-1.5 text-(--text-normal)">
-                <div><strong>本文作者：</strong>{{ settingStore.siteName ? settingStore.siteName.split(' ')[0] : '博主' }}</div>
+                <div><strong>本文作者：</strong>{{ authorName }}</div>
                 <div><strong>本文链接：</strong><span class="text-(--primary) break-all">{{ currentUrl }}</span></div>
                 <div><strong>版权许可：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" class="text-(--primary) underline">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</div>
               </div>
@@ -183,6 +183,7 @@ import SakuraEffect from '../components/features/SakuraEffect.vue'
 import FloatingControls from '../components/controls/FloatingControls.vue'
 import { useSettingStore } from '../store/setting'
 import { useThemeStore } from '../store/theme'
+import { siteConfig, profileConfig } from '../config'
 
 const route = useRoute()
 const router = useRouter()
@@ -195,6 +196,10 @@ const isLiked = ref(false)
 const likeCount = ref(0)
 const activeTocId = ref('')
 
+const authorName = computed(() => {
+  return siteConfig.author || profileConfig.name || (settingStore.siteName ? settingStore.siteName.split(' ')[0] : 'Firefly')
+})
+
 interface TocItem {
   id: string
   text: string
@@ -206,7 +211,7 @@ const currentUrl = computed(() => window.location.href)
 
 const articleCover = computed(() => {
   if (article.value?.coverUrl) return article.value.coverUrl
-  return '/assets/images/DesktopWallpaper/d1.avif'
+  return siteConfig.defaultCoverUrl || '/assets/images/DesktopWallpaper/d1.avif'
 })
 
 const articleWords = computed(() => {
