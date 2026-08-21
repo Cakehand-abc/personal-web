@@ -92,18 +92,6 @@
               />
             </div>
 
-            <!-- 3. 文章版权许可声明 (Firefly 风格 License Block) -->
-            <div class="license-box mt-10 p-5 rounded-2xl bg-(--btn-regular-bg) border border-(--line-divider) text-xs">
-              <div class="font-bold text-(--text-bright) mb-2 flex items-center gap-1.5 text-sm">
-                <span>📜</span>
-                <span>版权声明 / License</span>
-              </div>
-              <div class="flex flex-col gap-1.5 text-(--text-normal)">
-                <div><strong>本文作者：</strong>{{ authorName }}</div>
-                <div><strong>本文链接：</strong><span class="text-(--primary) break-all">{{ currentUrl }}</span></div>
-                <div><strong>版权许可：</strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" class="text-(--primary) underline">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</div>
-              </div>
-            </div>
 
             <!-- 底部导航与点赞操作 -->
             <div class="mt-8 pt-6 border-t border-(--line-divider) flex flex-wrap items-center justify-between gap-4">
@@ -180,14 +168,11 @@ import { MdPreview } from 'md-editor-v3'
 import 'md-editor-v3/lib/preview.css'
 import WavesEffect from '../components/features/WavesEffect.vue'
 import SakuraEffect from '../components/features/SakuraEffect.vue'
-import FloatingControls from '../components/controls/FloatingControls.vue'
-import { useSettingStore } from '../store/setting'
 import { useThemeStore } from '../store/theme'
-import { siteConfig, profileConfig } from '../config'
+import { siteConfig } from '../config'
 
 const route = useRoute()
 const router = useRouter()
-const settingStore = useSettingStore()
 const themeStore = useThemeStore()
 
 const article = ref<any>(null)
@@ -196,18 +181,12 @@ const isLiked = ref(false)
 const likeCount = ref(0)
 const activeTocId = ref('')
 
-const authorName = computed(() => {
-  return siteConfig.author || profileConfig.name || (settingStore.siteName ? settingStore.siteName.split(' ')[0] : 'Firefly')
-})
-
 interface TocItem {
   id: string
   text: string
   level: number
 }
 const tocList = ref<TocItem[]>([])
-
-const currentUrl = computed(() => window.location.href)
 
 const articleCover = computed(() => {
   if (article.value?.coverUrl) return article.value.coverUrl

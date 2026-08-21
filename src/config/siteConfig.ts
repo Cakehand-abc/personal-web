@@ -89,8 +89,9 @@ export const siteConfig: SiteConfig = {
 
   // 9. 【主题色彩配置】
   themeColor: {
-    hue: 250,           // 默认青蓝色相，用户可在右下角滑块随意调节
-    defaultMode: 'light'// 'light' 浅色，'dark' 暗色
+    // 默认色相：0~360 无级调节 (165 为流萤经典清新葱绿)
+    hue: 165,
+    defaultMode: 'light' // 默认模式：'light' 浅色，'dark' 深色
   },
 
   // 10. 【文章列表布局】

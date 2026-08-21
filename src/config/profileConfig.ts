@@ -58,7 +58,7 @@ export const profileConfig: ProfileConfig = {
     {
       name: '联系站长邮箱',
       icon: 'email',
-      url: 'mailto:your-email@example.com'
+      url: 'mailto:yimohu189@gmail.com'
     }
   ]
 }

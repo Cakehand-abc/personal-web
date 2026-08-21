@@ -31,14 +31,13 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
 import { computed } from 'vue'
-import { activeSection } from '../store/navState'
+import { activeSection, isNavScrolling } from '../store/navState'
 
 const route = useRoute()
 const router = useRouter()
 
 const navList = [
   { name: 'Home', isAnchor: true, target: '#home', path: '#home' },
-  { name: 'Featured', isAnchor: true, target: '#featured', path: '#featured' },
   { name: 'Articles', isAnchor: true, target: '#articles', path: '#articles' },
   { name: 'Essays', isAnchor: true, target: '#essays', path: '#essays' },
   { name: 'Gallery', isAnchor: true, target: '#gallery', path: '#gallery' },
@@ -57,39 +56,26 @@ const activeNavPath = computed(() => {
   return route.path
 })
 
-// 先快后慢再快的缓动函数 (easeInOutCubic)
-const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
-
-const smoothScrollTo = (targetId: string, duration: number) => {
-  const target = document.querySelector(targetId) as HTMLElement
-  if (!target) return
-  const targetPosition = target.getBoundingClientRect().top + window.scrollY
-  const startPosition = window.scrollY
-  const distance = targetPosition - startPosition
-  let startTime: number | null = null
-
-  const animation = (currentTime: number) => {
-    if (startTime === null) startTime = currentTime
-    const timeElapsed = currentTime - startTime
-    const progress = Math.min(timeElapsed / duration, 1)
-    
-    window.scrollTo(0, startPosition + distance * easeInOutCubic(progress))
-
-    if (timeElapsed < duration) {
-      requestAnimationFrame(animation)
-    }
-  }
-  requestAnimationFrame(animation)
-}
-
 const handleNavClick = async (nav: any) => {
   if (nav.isAnchor) {
+    activeSection.value = nav.target
+    isNavScrolling.value = true
+
     if (route.path !== '/') {
       await router.push('/')
-      // 等待 DOM 渲染后滚动
-      setTimeout(() => smoothScrollTo(nav.target, 800), 100)
+      setTimeout(() => {
+        const el = document.querySelector(nav.target) as HTMLElement
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+        setTimeout(() => { isNavScrolling.value = false }, 700)
+      }, 100)
     } else {
-      smoothScrollTo(nav.target, 800)
+      const el = document.querySelector(nav.target) as HTMLElement
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+      setTimeout(() => { isNavScrolling.value = false }, 700)
     }
   } else {
     router.push(nav.path)

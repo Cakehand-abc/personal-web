@@ -1,27 +1,19 @@
 <template>
-  <div v-if="announcementConfig.enable && visible" class="card-base p-4 relative overflow-hidden" v-scroll-reveal>
-    <div class="flex items-center justify-between mb-2">
-      <div class="flex items-center gap-2">
-        <span class="text-lg">📢</span>
-        <h4 class="font-bold text-sm text-(--text-bright)">{{ announcementConfig.title }}</h4>
-      </div>
-      <button 
-        v-if="announcementConfig.closable"
-        @click="visible = false" 
-        class="text-(--text-dim) hover:text-(--text-bright) p-1 rounded-md transition-colors text-xs"
-        title="关闭公告"
-      >
-        ✕
-      </button>
+  <div id="signature-widget" class="card-base p-5 relative overflow-hidden h-auto">
+    <!-- 标题 (带左侧绿色竖条指示器) -->
+    <div class="flex items-center gap-2 mb-2.5">
+      <span class="w-1.5 h-4.5 rounded-full bg-(--primary)"></span>
+      <h4 class="font-bold text-base text-(--text-bright)">签名</h4>
     </div>
-    <p class="text-xs text-(--text-normal) leading-relaxed">
-      {{ content || announcementConfig.content }}
+
+    <!-- 签名正文内容 (高度根据文字行数自适应撑开) -->
+    <p class="text-xs md:text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed break-words whitespace-pre-line m-0">
+      {{ content || announcementConfig.content || '山高水长，天涯未远。愿我们在星光指引下，奔赴所热爱的未来 ✨' }}
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { announcementConfig } from '../../config'
 
 withDefaults(
@@ -32,6 +24,4 @@ withDefaults(
     content: ''
   }
 )
-
-const visible = ref(true)
 </script>

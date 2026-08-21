@@ -1,158 +1,109 @@
 <template>
-  <div class="firefly-home w-full min-h-screen">
-    <!-- 樱花飘落动效 -->
+  <div class="home-container min-h-screen relative">
+    <!-- 1. 顶部全景壁纸轮播 Banner (包含落樱特效与水波纹) -->
+    <FireflyBanner />
     <SakuraEffect />
 
-    <!-- 1. 顶部全宽 Firefly 巨幅横幅 Banner (对应 #home 锚点) -->
-    <section id="home" class="scroll-mt-0">
-      <FireflyBanner />
-    </section>
-
-    <!-- 2. 主体双栏区域 (左侧主信息流 + 右侧吸顶小组件栏) -->
-    <div class="max-w-[1400px] mx-auto px-4 md:px-6 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_320px] gap-8 items-start">
+    <!-- 2. 主体栅格容器 (单侧栏大宽屏沉浸式布局) -->
+    <div class="max-w-[1440px] mx-auto px-4 md:px-8 py-8 relative z-20">
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-8 items-start">
         
-        <!-- 左侧主内容信息流 -->
-        <div class="main-stream-column flex flex-col gap-12 min-w-0">
+        <!-- 左侧主内容信息流 (板块间距适度舒适) -->
+        <div class="main-stream-column flex flex-col gap-9 min-w-0">
           
-          <!-- 1. 编辑精选区域 (对应 #featured 锚点) -->
-          <div id="featured" class="scroll-mt-6">
-            <div class="flex items-center justify-between mb-4">
+          <!-- 1. 全部文章列表流 (对应 #articles 锚点，统一 200px 无封面卡片) -->
+          <div id="articles" class="scroll-mt-6 flex flex-col gap-4">
+            <!-- 板块头部 -->
+            <div class="flex items-center justify-between mb-1">
               <div class="flex items-center gap-2">
-                <span class="text-xl">🌟</span>
-                <h2 class="text-xl md:text-2xl font-bold text-(--text-bright)">编辑精选 Featured</h2>
+                <span class="w-1.5 h-4.5 rounded-full bg-(--primary)"></span>
+                <h2 class="text-xl md:text-2xl font-bold text-(--text-bright)">精选文章 Articles</h2>
               </div>
-              <span class="text-xs text-(--text-dim)">精选优质博文</span>
+              <span class="text-xs md:text-sm text-neutral-400">技术探索与系统架构</span>
             </div>
 
-            <!-- 精选文章网格 -->
-            <div v-if="featuredArticles.length === 0" class="card-base p-8 text-center text-xs text-(--text-dim)">
-              暂无精选文章～
-            </div>
-            <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <ArticleCard 
-                v-for="article in featuredArticles" 
-                :key="'feat-' + article.id" 
-                :data="article" 
-                layout="grid"
-              />
-            </div>
-          </div>
-
-          <!-- 2. 全部文章列表区域 (对应 #articles 锚点) -->
-          <div id="articles" class="scroll-mt-6">
-            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-              <div class="flex items-center gap-2">
-                <span class="text-xl">📚</span>
-                <h2 class="text-xl md:text-2xl font-bold text-(--text-bright)">全部文章 Articles</h2>
-                <span class="text-xs px-2.5 py-0.5 rounded-full bg-(--btn-regular-bg) text-(--btn-content) font-bold">
-                  {{ filteredArticles.length }} 篇
-                </span>
-              </div>
-
-              <!-- 列表 / 网格视图切换开关 -->
-              <div class="flex items-center gap-1.5 p-1 rounded-xl bg-(--btn-regular-bg) border border-(--line-divider) text-xs">
-                <button 
-                  @click="themeStore.setPostLayout('list')" 
-                  class="px-2.5 py-1 rounded-lg transition-all font-medium flex items-center gap-1"
-                  :class="themeStore.postLayout === 'list' ? 'bg-(--primary) text-white shadow-sm' : 'text-(--text-dim) hover:text-(--text-bright)'"
-                  title="列表视图"
-                >
-                  <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
-                  <span class="hidden sm:inline">列表</span>
-                </button>
-                <button 
-                  @click="themeStore.setPostLayout('grid')" 
-                  class="px-2.5 py-1 rounded-lg transition-all font-medium flex items-center gap-1"
-                  :class="themeStore.postLayout === 'grid' ? 'bg-(--primary) text-white shadow-sm' : 'text-(--text-dim) hover:text-(--text-bright)'"
-                  title="网格视图"
-                >
-                  <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M4 4h7v7H4zm9 0h7v7h-7zm-9 9h7v7H4zm9 0h7v7h-7z"/></svg>
-                  <span class="hidden sm:inline">网格</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- 分类筛选小标签栏 -->
-            <div v-if="categoryList.length > 0" class="flex flex-wrap gap-2 mb-4">
-              <button 
-                @click="selectedCategory = ''" 
-                class="px-3 py-1 rounded-full text-xs font-semibold transition-all"
-                :class="selectedCategory === '' ? 'bg-(--primary) text-white shadow-sm' : 'btn-regular text-(--text-normal)'"
-              >
-                全部
-              </button>
-              <button 
-                v-for="cat in categoryList" 
-                :key="cat.name"
-                @click="selectedCategory = cat.name"
-                class="px-3 py-1 rounded-full text-xs font-semibold transition-all"
-                :class="selectedCategory === cat.name ? 'bg-(--primary) text-white shadow-sm' : 'btn-regular text-(--text-normal)'"
-              >
-                {{ cat.name }} ({{ cat.count }})
-              </button>
-            </div>
-
-            <!-- 文章列表主体渲染 -->
+            <!-- 文章加载中 -->
             <div v-if="loading" class="flex justify-center items-center py-16 text-sm text-(--text-dim)">
               正在加载文章中...
             </div>
+            <!-- 文章为空 -->
             <div v-else-if="filteredArticles.length === 0" class="card-base p-8 text-center text-xs text-(--text-dim)">
               该分类下暂无文章～
             </div>
-            <div 
-              v-else 
-              :class="themeStore.postLayout === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-5' : 'flex flex-col gap-4'"
-            >
+            <!-- 文章卡片列表 (高度统一为 200px) -->
+            <template v-else>
               <ArticleCard 
                 v-for="article in filteredArticles" 
                 :key="article.id" 
                 :data="article" 
-                :layout="themeStore.postLayout"
               />
+            </template>
+
+            <!-- 右下角金色 More 操作按钮 -->
+            <div class="flex justify-end mt-1">
+              <a href="#articles" class="section-more-btn flex items-center gap-2 group cursor-pointer select-none">
+                <span class="more-text font-serif tracking-widest text-sm font-bold">More</span>
+                <svg class="more-arrow-icon w-10 h-3.5 transition-transform duration-300 group-hover:translate-x-1.5" viewBox="0 0 100 32" fill="none">
+                  <path d="M 8 18 H 86 L 72 6" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
             </div>
           </div>
 
-          <!-- 3. 随笔动态区域 (对应 #essays 锚点) -->
-          <div id="essays" class="scroll-mt-6">
-            <div class="flex items-center justify-between mb-4">
+          <!-- 2. 日常随笔动态区域 (对应 #essays 锚点) -->
+          <div id="essays" class="scroll-mt-6 flex flex-col gap-3.5">
+            <!-- 板块头部 -->
+            <div class="flex items-center justify-between mb-1">
               <div class="flex items-center gap-2">
-                <span class="text-xl">🍃</span>
+                <span class="w-1.5 h-4.5 rounded-full bg-(--primary)"></span>
                 <h2 class="text-xl md:text-2xl font-bold text-(--text-bright)">日常随笔 Essays</h2>
               </div>
-              <span class="text-xs text-(--text-dim)">记录灵感与生活的切片</span>
+              <span class="text-xs md:text-sm text-neutral-400">灵感与生活瞬间</span>
             </div>
 
-            <!-- 随笔卡片流 -->
-            <div class="flex flex-col gap-4">
+            <!-- 随笔卡片流 (从后端/动态数据库读取) -->
+            <div v-if="displayMoments.length === 0" class="card-base p-8 text-center text-xs text-(--text-dim)">
+              暂无随笔动态，请在后台发布～
+            </div>
+            <div v-else class="flex flex-col gap-4">
               <div 
-                v-for="(essay, idx) in essaysList" 
-                :key="idx" 
-                class="card-base p-5 transition-all duration-300 hover:scale-[1.01]"
-                v-scroll-reveal
+                v-for="essay in displayMoments" 
+                :key="essay.id" 
+                class="card-base p-5 transition-all duration-300 hover:shadow-md border border-(--line-divider)"
               >
                 <div class="flex items-center justify-between text-xs text-(--text-dim) mb-2">
-                  <span class="font-bold text-(--primary)"># {{ essay.tag }}</span>
-                  <span>{{ essay.date }}</span>
+                  <span class="font-bold text-(--primary)"># {{ essay.tag || '生活随笔' }}</span>
+                  <span>{{ formatDate(essay.createTime || essay.date) }}</span>
                 </div>
                 <p class="text-xs md:text-sm text-(--text-normal) leading-relaxed">
                   {{ essay.content }}
                 </p>
                 <div class="mt-3 flex items-center gap-4 text-xs text-(--text-dim)">
-                  <span>❤️ {{ essay.likes }} 喜欢</span>
+                  <span>❤️ {{ essay.likes || 1 }} 喜欢</span>
                 </div>
               </div>
             </div>
+
+            <!-- 右下角金色 More 操作按钮 -->
+            <div class="flex justify-end mt-1">
+              <a href="#essays" class="section-more-btn flex items-center gap-2 group cursor-pointer select-none">
+                <span class="more-text font-serif tracking-widest text-sm font-bold">More</span>
+                <svg class="more-arrow-icon w-10 h-3.5 transition-transform duration-300 group-hover:translate-x-1.5" viewBox="0 0 100 32" fill="none">
+                  <path d="M 8 18 H 86 L 72 6" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </div>
           </div>
 
-          <!-- 4. 画廊相册区域 (对应 #gallery 锚点) -->
-          <div id="gallery" class="scroll-mt-6">
-            <div class="flex items-center justify-between mb-4">
+          <!-- 3. 画廊相册区域 (对应 #gallery 锚点) -->
+          <div id="gallery" class="scroll-mt-6 flex flex-col gap-3.5">
+            <!-- 板块头部 -->
+            <div class="flex items-center justify-between mb-1">
               <div class="flex items-center gap-2">
-                <span class="text-xl">🖼️</span>
-                <h2 class="text-xl md:text-2xl font-bold text-(--text-bright)">画廊相册 Gallery</h2>
+                <span class="w-1.5 h-4.5 rounded-full bg-(--primary)"></span>
+                <h2 class="text-xl md:text-2xl font-bold text-(--text-bright)">光影长廊 Gallery</h2>
               </div>
-              <span class="text-xs text-(--text-dim)">星空与流光的缩影</span>
+              <span class="text-xs md:text-sm text-neutral-400">定格沿途的美好瞬间</span>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-3 gap-3.5">
@@ -160,7 +111,6 @@
                 v-for="(img, idx) in galleryImages" 
                 :key="idx" 
                 class="gallery-card relative rounded-2xl overflow-hidden aspect-[4/3] group cursor-pointer border border-(--line-divider) shadow-sm"
-                v-scroll-reveal
               >
                 <img 
                   :src="img.url" 
@@ -173,30 +123,40 @@
                 </div>
               </div>
             </div>
+
+            <!-- 右下角金色 More 操作按钮 -->
+            <div class="flex justify-end mt-1">
+              <a href="#gallery" class="section-more-btn flex items-center gap-2 group cursor-pointer select-none">
+                <span class="more-text font-serif tracking-widest text-sm font-bold">More</span>
+                <svg class="more-arrow-icon w-10 h-3.5 transition-transform duration-300 group-hover:translate-x-1.5" viewBox="0 0 100 32" fill="none">
+                  <path d="M 8 18 H 86 L 72 6" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </div>
           </div>
 
-          <!-- 5. 作品集区域 (对应 #projects 锚点) -->
-          <div id="projects" class="scroll-mt-6">
-            <div class="flex items-center justify-between mb-4">
+          <!-- 4. 开源作品集区域 (对应 #projects 锚点 - 直连后端数据库) -->
+          <div id="projects" class="scroll-mt-6 flex flex-col gap-3.5">
+            <!-- 板块头部 -->
+            <div class="flex items-center justify-between mb-1">
               <div class="flex items-center gap-2">
-                <span class="text-xl">🚀</span>
+                <span class="w-1.5 h-4.5 rounded-full bg-(--primary)"></span>
                 <h2 class="text-xl md:text-2xl font-bold text-(--text-bright)">开源作品集 Projects</h2>
               </div>
-              <span class="text-xs text-(--text-dim)">实践出真知</span>
+              <span class="text-xs md:text-sm text-neutral-400">代码创造的开源世界</span>
             </div>
 
             <div v-if="projectsLoading" class="text-center py-8 text-sm text-(--text-dim)">
               获取作品集中...
             </div>
-            <div v-else-if="displayProjects.length === 0" class="card-base p-8 text-center text-xs text-(--text-dim)">
+            <div v-else-if="projects.length === 0" class="card-base p-8 text-center text-xs text-(--text-dim)">
               暂无作品数据，请在后台添加～
             </div>
-            <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div 
-                v-for="proj in displayProjects" 
+                v-for="proj in projects" 
                 :key="proj.id" 
-                class="card-base p-5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1"
-                v-scroll-reveal
+                class="card-base p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-md border border-(--line-divider)"
               >
                 <div>
                   <div class="flex items-center justify-between mb-2">
@@ -204,7 +164,7 @@
                     <span class="text-[10px] px-2 py-0.5 rounded-md bg-(--primary)/15 text-(--primary) font-medium">开源项目</span>
                   </div>
                   <p class="text-xs text-(--text-normal) leading-relaxed line-clamp-3 mb-4">
-                    {{ proj.description || '精心构建的现代化 Web 应用程序与工具。' }}
+                    {{ proj.description || '精心构建的现代化开源项目。' }}
                   </p>
                 </div>
 
@@ -220,27 +180,38 @@
                   <span v-else class="text-(--text-dim)">私有项目</span>
 
                   <a 
-                    v-if="proj.downloadUrl" 
+                    v-if="proj.downloadUrl && proj.downloadUrl !== '暂无'" 
                     :href="proj.downloadUrl" 
                     target="_blank" 
                     class="btn-regular px-3 py-1 text-[11px] font-bold rounded-lg hover:bg-(--primary) hover:text-white transition-colors"
                   >
-                    下载源码 ⬇
+                    下载 ⬇
                   </a>
                 </div>
               </div>
             </div>
+
+            <!-- 右下角金色 More 操作按钮 -->
+            <div class="flex justify-end mt-1">
+              <a href="#projects" class="section-more-btn flex items-center gap-2 group cursor-pointer select-none">
+                <span class="more-text font-serif tracking-widest text-sm font-bold">More</span>
+                <svg class="more-arrow-icon w-10 h-3.5 transition-transform duration-300 group-hover:translate-x-1.5" viewBox="0 0 100 32" fill="none">
+                  <path d="M 8 18 H 86 L 72 6" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </div>
           </div>
 
-          <!-- 6. 留言板区域 (对应 #message 锚点) -->
+          <!-- 5. 留言板区域 (对应 #message 锚点 - 无需 More 按钮) -->
           <div id="message" class="scroll-mt-6">
             <MessageBoard />
           </div>
 
-          <!-- 7. 关于区域锚点 (对应 #about 锚点) -->
-          <div id="about" class="scroll-mt-6 card-base p-6">
+          <!-- 6. 关于区域锚点 (对应 #about 锚点 - 无需 More 按钮) -->
+          <div id="about" class="scroll-mt-6 card-base p-6 border border-(--line-divider)">
             <h3 class="text-lg font-bold text-(--text-bright) mb-2 flex items-center gap-2">
-              <span>🌸</span> 关于本站
+              <span class="w-1.5 h-4.5 rounded-full bg-(--primary)"></span>
+              <span>关于本站</span>
             </h3>
             <p class="text-xs text-(--text-normal) leading-relaxed mb-3">
               这是一个由 Vue 3 + TypeScript 构建，深度融合 Firefly（流萤）清新美学设计的个人空间。
@@ -273,49 +244,42 @@
 
         </div>
 
-        <!-- 右侧 Firefly 侧边栏小组件组 (桌面端吸顶 Sticky) -->
-        <aside class="sidebar-widgets-column flex flex-col gap-6 lg:sticky lg:top-6">
-          <!-- 1. 个人资料卡 -->
-          <ProfileWidget 
-            v-if="sidebarConfig.widgets.profile"
-            :article-count="articles.length"
-            :category-count="categoryList.length"
-            :tag-count="tagList.length"
-          />
+        <!-- 右侧完整小组件栏 (分段式：上部 3 卡片自然滚动，最后 3 卡片吸顶保留) -->
+        <aside class="sidebar-widgets-column flex flex-col gap-6 w-full">
+          <!-- 上部组件群 (随页面自然同步下滑滚动) -->
+          <div class="flex flex-col gap-6">
+            <!-- 1. 博主名片卡 (Profile) -->
+            <ProfileWidget />
 
-          <!-- 2. 公告栏 -->
-          <AnnouncementWidget 
-            v-if="sidebarConfig.widgets.announcement"
-          />
+            <!-- 2. 站点公告 (Announcement) -->
+            <AnnouncementWidget />
 
-          <!-- 3. 文章分类 -->
-          <CategoriesWidget 
-            v-if="sidebarConfig.widgets.categories"
-            :categories="categoryList" 
-            :active-category="selectedCategory"
-            @select="cat => selectedCategory = (selectedCategory === cat ? '' : cat)"
-          />
+            <!-- 3. 音乐播放器 (Music) -->
+            <MusicWidget />
+          </div>
 
-          <!-- 4. 热门标签云 -->
-          <TagsWidget 
-            v-if="sidebarConfig.widgets.tags"
-            :tags="tagList" 
-            :active-tag="selectedTag"
-            @select="tag => selectedTag = (selectedTag === tag ? '' : tag)"
-          />
+          <!-- 下部组件群 (下滑到最后 3 个卡片时吸顶固定 - Sticky，保证始终留存最后三张) -->
+          <div class="flex flex-col gap-6 lg:sticky lg:top-6">
+            <!-- 4. 最新动态 (Latest Moments) -->
+            <DynamicWidget />
 
-          <!-- 5. 站点统计 -->
-          <SiteStatsWidget 
-            v-if="sidebarConfig.widgets.siteStats"
-            :article-count="articles.length" 
-            :total-words="calculatedTotalWords" 
-          />
+            <!-- 5. 站点统计 (Site Stats) -->
+            <SiteStatsWidget 
+              :article-count="articles.length || 0" 
+              :category-count="categoryList.length || 0"
+              :tag-count="tagList.length || 0"
+              :total-words="calculatedTotalWords" 
+            />
+
+            <!-- 6. 站点信息 (Site Info) -->
+            <SiteInfoWidget />
+          </div>
         </aside>
 
       </div>
     </div>
 
-    <!-- 右下角悬浮控制按钮组 (Back to Top / 亮暗切换 / 色相调节 / 樱花开关) -->
+    <!-- 右下角悬浮控制按钮 (Back to Top) -->
     <FloatingControls />
   </div>
 </template>
@@ -330,30 +294,25 @@ import SakuraEffect from '../components/features/SakuraEffect.vue'
 import FloatingControls from '../components/controls/FloatingControls.vue'
 import ProfileWidget from '../components/widgets/ProfileWidget.vue'
 import AnnouncementWidget from '../components/widgets/AnnouncementWidget.vue'
-import CategoriesWidget from '../components/widgets/CategoriesWidget.vue'
-import TagsWidget from '../components/widgets/TagsWidget.vue'
+import MusicWidget from '../components/widgets/MusicWidget.vue'
+import DynamicWidget from '../components/widgets/DynamicWidget.vue'
 import SiteStatsWidget from '../components/widgets/SiteStatsWidget.vue'
-import { useThemeStore } from '../store/theme'
-import { activeSection } from '../store/navState'
-import { 
-  sidebarConfig, 
-  galleryConfig, 
-  dynamicConfig, 
-  projectsConfig 
-} from '../config'
-
-const themeStore = useThemeStore()
+import SiteInfoWidget from '../components/widgets/SiteInfoWidget.vue'
+import { activeSection, isNavScrolling } from '../store/navState'
+import { galleryConfig } from '../config'
 
 const articles = ref<any[]>([])
 const projects = ref<any[]>([])
+const moments = ref<any[]>([])
+const dbCategories = ref<any[]>([])
+const dbTags = ref<any[]>([])
 const loading = ref(true)
 const projectsLoading = ref(true)
 const selectedCategory = ref('')
-const selectedTag = ref('')
 
 const fetchArticles = async () => {
   try {
-    const res = await axios.get('/api/articles/list', { params: { current: 1, size: 20 } })
+    const res = await axios.get('/api/articles/list', { params: { current: 1, size: 50 } })
     if (res.data.code === 200 && res.data.data) {
       articles.value = res.data.data.records || []
     }
@@ -378,30 +337,68 @@ const fetchProjects = async () => {
   }
 }
 
-// 作品集：优先展示后端数据，若后端为空则降级为 projectsConfig 静态配置
-const displayProjects = computed(() => {
-  if (projects.value.length > 0) return projects.value
-  return projectsConfig
+const fetchMoments = async () => {
+  try {
+    const res = await axios.get('/api/moments/list')
+    if (res.data.code === 200 && Array.isArray(res.data.data)) {
+      moments.value = res.data.data
+    }
+  } catch (error) {
+    // 静默降级
+  }
+}
+
+const fetchCategoriesAndTags = async () => {
+  try {
+    const [cRes, tRes] = await Promise.all([
+      axios.get('/api/categories/list').catch(() => ({ data: { data: [] } })),
+      axios.get('/api/tags/list').catch(() => ({ data: { data: [] } }))
+    ])
+    if (cRes.data?.data) dbCategories.value = cRes.data.data
+    if (tRes.data?.data) dbTags.value = tRes.data.data
+  } catch (e) {
+    // ignore
+  }
+}
+
+// 随笔动态展示
+const displayMoments = computed(() => {
+  if (moments.value.length > 0) return moments.value
+  return [
+    {
+      id: 1,
+      content: '欢迎来到流萤主题个人空间，探索技术架构与生活点滴 ✨',
+      tag: '置顶随笔',
+      createTime: '2026-08-21T10:00:00.000Z',
+      likes: 12
+    }
+  ]
 })
 
-// 精选推荐文章 (过滤 isFeatured 或前 2 篇)
-const featuredArticles = computed(() => {
-  const featured = articles.value.filter(a => a.isFeatured)
-  if (featured.length > 0) return featured.slice(0, 2)
-  return articles.value.slice(0, 2)
-})
-
-// 分类列表统计
+// 分类列表统计 (优先按数据库文章动态聚合)
 const categoryList = computed(() => {
   const map = new Map<string, number>()
   articles.value.forEach(a => {
-    const name = a.categoryName || '默认分类'
-    map.set(name, (map.get(name) || 0) + 1)
+    const name = a.categoryName || (a.category && a.category.name)
+    if (name) {
+      map.set(name, (map.get(name) || 0) + 1)
+    }
   })
+  dbCategories.value.forEach(c => {
+    if (!map.has(c.name)) {
+      map.set(c.name, 0)
+    }
+  })
+  if (map.size === 0) {
+    return [
+      { name: '系统运维', count: 1 },
+      { name: '开发笔记', count: 1 }
+    ]
+  }
   return Array.from(map.entries()).map(([name, count]) => ({ name, count }))
 })
 
-// 标签列表统计
+// 标签列表统计 (优先按数据库文章动态聚合)
 const tagList = computed(() => {
   const map = new Map<string, number>()
   articles.value.forEach(a => {
@@ -412,30 +409,25 @@ const tagList = computed(() => {
       })
     }
   })
+  dbTags.value.forEach(t => {
+    if (!map.has(t.name)) {
+      map.set(t.name, 0)
+    }
+  })
   if (map.size === 0) {
     return [
-      { name: 'Vue3', count: 2 },
-      { name: 'TypeScript', count: 2 },
-      { name: 'Firefly', count: 1 },
+      { name: 'Markdown', count: 2 },
+      { name: 'Firefly', count: 2 },
       { name: '前端工程化', count: 1 }
     ]
   }
   return Array.from(map.entries()).map(([name, count]) => ({ name, count }))
 })
 
-// 根据分类和标签过滤文章
+// 根据分类过滤文章
 const filteredArticles = computed(() => {
-  return articles.value.filter(a => {
-    if (selectedCategory.value && a.categoryName !== selectedCategory.value) {
-      return false
-    }
-    if (selectedTag.value) {
-      if (!Array.isArray(a.tags)) return false
-      const hasTag = a.tags.some((t: any) => (t.tagName || t.name || t) === selectedTag.value)
-      if (!hasTag) return false
-    }
-    return true
-  })
+  if (!selectedCategory.value) return articles.value
+  return articles.value.filter(a => (a.categoryName || (a.category && a.category.name)) === selectedCategory.value)
 })
 
 const calculatedTotalWords = computed(() => {
@@ -444,14 +436,16 @@ const calculatedTotalWords = computed(() => {
     if (a.summary) count += a.summary.length
     if (a.content) count += a.content.length
   })
-  return Math.max(3400, count)
+  return Math.max(16293, count)
 })
 
-// 随笔动态数据（从 config/dynamicConfig 导入）
-const essaysList = dynamicConfig
-
-// 画廊相册数据（从 config/galleryConfig 导入）
+// 画廊相册数据
 const galleryImages = galleryConfig
+
+const formatDate = (dateStr?: string) => {
+  if (!dateStr) return '2026-08-21'
+  return dateStr.substring(0, 10).replace(/\//g, '-')
+}
 
 // ScrollSpy 滚动监听与 SideNav 联动
 let scrollHandler: any = null
@@ -459,23 +453,35 @@ let scrollHandler: any = null
 onMounted(() => {
   fetchArticles()
   fetchProjects()
+  fetchMoments()
+  fetchCategoriesAndTags()
 
-  const sections = ['#home', '#featured', '#articles', '#essays', '#gallery', '#projects', '#message', '#about']
+  const sections = ['#home', '#articles', '#essays', '#gallery', '#projects', '#message', '#about']
 
+  let ticking = false
   scrollHandler = () => {
-    const triggerLine = window.innerHeight / 2
-    let currentId = '#home'
-    for (const selector of sections) {
-      const el = document.querySelector(selector) as HTMLElement
-      if (el) {
-        const rect = el.getBoundingClientRect()
-        if (rect.top <= triggerLine) {
-          currentId = selector
+    if (isNavScrolling.value) return
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        if (!isNavScrolling.value) {
+          const triggerLine = window.innerHeight / 3
+          let currentId = '#home'
+          for (const selector of sections) {
+            const el = document.querySelector(selector) as HTMLElement
+            if (el) {
+              const rect = el.getBoundingClientRect()
+              if (rect.top <= triggerLine) {
+                currentId = selector
+              }
+            }
+          }
+          if (activeSection.value !== currentId) {
+            activeSection.value = currentId
+          }
         }
-      }
-    }
-    if (activeSection.value !== currentId) {
-      activeSection.value = currentId
+        ticking = false
+      })
+      ticking = true
     }
   }
 
@@ -493,5 +499,29 @@ onUnmounted(() => {
 <style scoped>
 .scroll-mt-6 {
   scroll-margin-top: 2rem;
+}
+
+/* 金黄色 More 按钮与箭头样式 (完全对齐左侧导航栏金黄色系统) */
+.section-more-btn {
+  color: #DDB95B;
+  transition: all 0.3s ease;
+}
+
+.section-more-btn:hover {
+  color: #B89030;
+}
+
+.more-text {
+  background: linear-gradient(90deg, #DDB95B, #B89030);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.more-arrow-icon {
+  color: #DDB95B;
+}
+
+.section-more-btn:hover .more-arrow-icon {
+  color: #B89030;
 }
 </style>

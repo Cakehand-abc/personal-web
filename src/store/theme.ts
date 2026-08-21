@@ -4,12 +4,16 @@ import { ref } from 'vue'
 export const useThemeStore = defineStore('theme', () => {
   // 从 localStorage 读取或设置默认值
   const savedTheme = localStorage.getItem('firefly_theme') || 'light'
-  const savedHue = localStorage.getItem('firefly_hue') || '250'
+  const rawHue = localStorage.getItem('firefly_hue')
+  const savedHue = (!rawHue || rawHue === '250') ? '165' : rawHue
+  if (!rawHue || rawHue === '250') {
+    localStorage.setItem('firefly_hue', '165')
+  }
   const savedSakura = localStorage.getItem('firefly_sakura') !== 'false' // 默认开启
   const savedLayout = localStorage.getItem('firefly_layout') || 'list' // list or grid
 
   const isDark = ref(savedTheme === 'dark')
-  const hue = ref(parseInt(savedHue, 10) || 250)
+  const hue = ref(parseInt(savedHue, 10) || 165)
   const sakuraEnabled = ref(savedSakura)
   const postLayout = ref<'list' | 'grid'>(savedLayout as 'list' | 'grid')
 

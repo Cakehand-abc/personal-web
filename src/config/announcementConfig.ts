@@ -9,7 +9,7 @@ export interface AnnouncementConfig {
   /** 是否启用公告栏展示 (true: 显示, false: 完全隐藏该组件) */
   enable: boolean
 
-  /** 公告栏标题 (例如："站点公告"、"最新动态"、"维护提醒") */
+  /** 公告栏标题 (例如："公告"、"站点公告") */
   title: string
 
   /** 公告正文内容 */
@@ -17,6 +17,13 @@ export interface AnnouncementConfig {
 
   /** 是否允许访客点击右上角 ✕ 按钮手动关闭此卡片 */
   closable: boolean
+
+  /** 底部操作按钮配置 */
+  link?: {
+    enable: boolean
+    url: string
+    text: string
+  }
 }
 
 export const announcementConfig: AnnouncementConfig = {
@@ -24,11 +31,18 @@ export const announcementConfig: AnnouncementConfig = {
   enable: true,
 
   // 2. 【公告标题】
-  title: '站点公告',
+  title: '公告',
 
   // 3. 【公告正文内容】
-  content: '欢迎来到我的全新 Firefly 风格个人博客！这里汇聚了前端技术、生活随笔、画廊与开源项目，愿你在此收获温暖与灵感。',
+  content: '欢迎来到我的博客！这是一则示例公告。',
 
   // 4. 【允许关闭】
-  closable: true
+  closable: true,
+
+  // 5. 【了解更多按钮】
+  link: {
+    enable: true,
+    url: '#about',
+    text: '了解更多'
+  }
 }
