@@ -1,8 +1,12 @@
 <template>
   <div class="card-base p-6 flex flex-col items-center text-center relative group">
-    <!-- 1. 头像区域 (带发光与圆角卡片) -->
-    <div class="relative mb-4 mt-2">
-      <div class="w-32 h-32 rounded-2xl overflow-hidden shadow-md border-2 border-white/80 dark:border-white/20 relative z-10 transition-transform duration-500 group-hover:scale-105">
+    <!-- 1. 圆形头像区域 (支持自定义，正圆形带流萤绿发光环，点击跳转 /about) -->
+    <div 
+      @click="goToAbout"
+      class="relative mb-4 mt-2 cursor-pointer group/avatar"
+      title="点击查看关于我的主页 (About Me)"
+    >
+      <div class="w-32 h-32 rounded-full overflow-hidden shadow-lg ring-4 ring-(--primary)/25 border-3 border-white dark:border-neutral-800 relative z-10 transition-transform duration-500 group-hover/avatar:scale-105 group-hover/avatar:rotate-3">
         <img 
           :src="displayAvatar" 
           alt="Avatar" 
@@ -10,12 +14,16 @@
           @error="handleAvatarError"
         />
       </div>
-      <!-- 装饰微光光晕 -->
-      <div class="absolute inset-0 rounded-2xl bg-(--primary) opacity-0 group-hover:opacity-25 blur-xl transition-opacity duration-500"></div>
+      <!-- 悬浮微光光晕 -->
+      <div class="absolute inset-0 rounded-full bg-(--primary) opacity-0 group-hover/avatar:opacity-30 blur-xl transition-opacity duration-500"></div>
     </div>
 
-    <!-- 2. 博主昵称 -->
-    <h3 class="text-2xl font-bold text-(--text-bright) mb-1">
+    <!-- 2. 博主昵称 (点击跳转 /about) -->
+    <h3 
+      @click="goToAbout"
+      class="text-2xl font-bold text-(--text-bright) hover:text-(--primary) transition-colors cursor-pointer mb-1 tracking-tight"
+      title="点击查看关于我的主页 (About Me)"
+    >
       {{ displayName }}
     </h3>
 
@@ -51,8 +59,8 @@
 
       <!-- 哔哩哔哩 按钮 -->
       <a 
-        :href="bilibiliUrl"
-        target="_blank"
+        :href="bilibiliUrl" 
+        target="_blank" 
         class="btn-regular w-11 h-11 rounded-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-sm group/btn"
         title="哔哩哔哩空间"
       >
@@ -64,30 +72,39 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { profileConfig, siteConfig } from '../../config'
+import { useSettingStore } from '../../store/setting'
+
+const router = useRouter()
+const settingStore = useSettingStore()
 
 const displayAvatar = computed(() => {
-  return profileConfig.avatar || '/assets/images/avatar.avif'
+  return settingStore.avatarUrl || profileConfig.avatar || '/assets/images/avatar.avif'
 })
 
 const displayName = computed(() => {
-  return profileConfig.name || siteConfig.title || 'Firefly'
+  return settingStore.siteName || profileConfig.name || siteConfig.title || 'Cakehand-abc'
 })
 
 const displayBio = computed(() => {
-  return profileConfig.bio || "Hello, I'm Firefly."
+  return profileConfig.bio || "山高水长，天涯未远。愿我们在星光指引下，奔赴所热爱的未来 ✨"
 })
 
 const githubUrl = computed(() => {
   const item = profileConfig.links.find(l => l.icon === 'github' || l.name.toLowerCase().includes('github'))
-  return item?.url || 'https://github.com'
+  return item?.url || 'https://github.com/Cakehand-abc'
 })
 
 const bilibiliUrl = computed(() => {
   const item = profileConfig.links.find(l => l.icon === 'bilibili' || l.name.toLowerCase().includes('bilibili'))
-  return item?.url || 'https://bilibili.com'
+  return item?.url || 'https://space.bilibili.com'
 })
+
+const goToAbout = () => {
+  router.push('/about')
+}
 
 const handleEmailClick = () => {
   const emailItem = profileConfig.links.find(l => l.icon === 'email' || l.url.startsWith('mailto:'))

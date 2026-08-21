@@ -8,7 +8,7 @@
     <div class="max-w-[1440px] mx-auto px-4 md:px-8 py-8 relative z-20">
       <div class="grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-8 items-start">
         
-        <!-- 左侧主内容信息流 (板块间距适度舒适) -->
+        <!-- 左侧主内容信息流 -->
         <div class="main-stream-column flex flex-col gap-9 min-w-0">
           
           <!-- 1. 全部文章列表流 (对应 #articles 锚点，统一 200px 无封面卡片) -->
@@ -26,31 +26,28 @@
             <div v-if="loading" class="flex justify-center items-center py-16 text-sm text-(--text-dim)">
               正在加载文章中...
             </div>
-            <!-- 文章为空 -->
-            <div v-else-if="filteredArticles.length === 0" class="card-base p-8 text-center text-xs text-(--text-dim)">
-              该分类下暂无文章～
-            </div>
             <!-- 文章卡片列表 (高度统一为 200px) -->
+            <!-- 文章卡片列表 (主页最多展示 3 条，更多需点击 More) -->
             <template v-else>
               <ArticleCard 
-                v-for="article in filteredArticles" 
+                v-for="article in displayArticles.slice(0, 3)" 
                 :key="article.id" 
                 :data="article" 
               />
             </template>
 
-            <!-- 右下角金色 More 操作按钮 -->
+            <!-- 右下角金色 More 操作按钮 (点击跳转至独立文章大全页面 /articles) -->
             <div class="flex justify-end mt-1">
-              <a href="#articles" class="section-more-btn flex items-center gap-2 group cursor-pointer select-none">
+              <router-link to="/articles" class="section-more-btn flex items-center gap-2 group cursor-pointer select-none">
                 <span class="more-text font-serif tracking-widest text-sm font-bold">More</span>
                 <svg class="more-arrow-icon w-10 h-3.5 transition-transform duration-300 group-hover:translate-x-1.5" viewBox="0 0 100 32" fill="none">
                   <path d="M 8 18 H 86 L 72 6" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-              </a>
+              </router-link>
             </div>
           </div>
 
-          <!-- 2. 日常随笔动态区域 (对应 #essays 锚点) -->
+          <!-- 2. 日常随笔动态区域 (对应 #essays 锚点 - 主页展示 3 条) -->
           <div id="essays" class="scroll-mt-6 flex flex-col gap-3.5">
             <!-- 板块头部 -->
             <div class="flex items-center justify-between mb-1">
@@ -61,13 +58,10 @@
               <span class="text-xs md:text-sm text-neutral-400">灵感与生活瞬间</span>
             </div>
 
-            <!-- 随笔卡片流 (从后端/动态数据库读取) -->
-            <div v-if="displayMoments.length === 0" class="card-base p-8 text-center text-xs text-(--text-dim)">
-              暂无随笔动态，请在后台发布～
-            </div>
-            <div v-else class="flex flex-col gap-4">
+            <!-- 随笔卡片流 (主页展示 3 条) -->
+            <div class="flex flex-col gap-4">
               <div 
-                v-for="essay in displayMoments" 
+                v-for="essay in displayMoments.slice(0, 3)" 
                 :key="essay.id" 
                 class="card-base p-5 transition-all duration-300 hover:shadow-md border border-(--line-divider)"
               >
@@ -84,18 +78,18 @@
               </div>
             </div>
 
-            <!-- 右下角金色 More 操作按钮 -->
+            <!-- 右下角金色 More 操作按钮 (点击跳转至独立随笔时间轴页面 /essays) -->
             <div class="flex justify-end mt-1">
-              <a href="#essays" class="section-more-btn flex items-center gap-2 group cursor-pointer select-none">
+              <router-link to="/essays" class="section-more-btn flex items-center gap-2 group cursor-pointer select-none">
                 <span class="more-text font-serif tracking-widest text-sm font-bold">More</span>
                 <svg class="more-arrow-icon w-10 h-3.5 transition-transform duration-300 group-hover:translate-x-1.5" viewBox="0 0 100 32" fill="none">
                   <path d="M 8 18 H 86 L 72 6" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-              </a>
+              </router-link>
             </div>
           </div>
 
-          <!-- 3. 画廊相册区域 (对应 #gallery 锚点) -->
+          <!-- 3. 光影长廊区域 (对应 #gallery 锚点 - 主页最多展示 2 行即 4 张相册卡片) -->
           <div id="gallery" class="scroll-mt-6 flex flex-col gap-3.5">
             <!-- 板块头部 -->
             <div class="flex items-center justify-between mb-1">
@@ -106,36 +100,57 @@
               <span class="text-xs md:text-sm text-neutral-400">定格沿途的美好瞬间</span>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3.5">
+            <!-- 首页相册堆叠卡片预览网格 (最多 2 行) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div 
-                v-for="(img, idx) in galleryImages" 
-                :key="idx" 
-                class="gallery-card relative rounded-2xl overflow-hidden aspect-[4/3] group cursor-pointer border border-(--line-divider) shadow-sm"
+                v-for="album in homeAlbums.slice(0, 4)" 
+                :key="album.id" 
+                @click="goToGallery"
+                class="group relative cursor-pointer"
               >
-                <img 
-                  :src="img.url" 
-                  :alt="img.title" 
-                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3 text-white">
-                  <span class="text-xs font-bold">{{ img.title }}</span>
-                  <span class="text-[10px] text-white/80">{{ img.desc }}</span>
+                <!-- 底部堆叠阴影层 -->
+                <div class="absolute inset-0 rounded-2xl bg-neutral-200/80 dark:bg-neutral-800/80 transform rotate-1 translate-y-1 scale-[0.98] transition-transform duration-300 group-hover:rotate-2"></div>
+
+                <!-- 主相册封面卡片 -->
+                <div class="relative z-10 rounded-2xl overflow-hidden aspect-[16/10] border border-(--line-divider) shadow-sm bg-neutral-900">
+                  <img 
+                    :src="album.cover || album.photos[0]?.url" 
+                    :alt="album.name" 
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <!-- 右上角数量徽标 -->
+                  <div class="absolute top-3 right-3 z-20 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[11px] font-bold border border-white/20">
+                    <span>{{ album.photos.length }} 张照片</span>
+                  </div>
+                  <!-- 底部信息渐变遮罩 -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 text-white z-20">
+                    <h3 class="text-base md:text-lg font-bold group-hover:text-(--primary) transition-colors">
+                      {{ album.name }}
+                    </h3>
+                    <p class="text-xs text-white/80 line-clamp-1 mt-0.5">
+                      {{ album.description }}
+                    </p>
+                    <div class="flex items-center justify-between text-[11px] text-white/60 mt-2 pt-2 border-t border-white/10">
+                      <span>{{ album.date }}</span>
+                      <span class="text-(--primary) font-semibold">进入相册 ➔</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- 右下角金色 More 操作按钮 -->
+            <!-- 右下角金色 More 操作按钮 (点击跳转至独立光影长廊相册页面 /gallery) -->
             <div class="flex justify-end mt-1">
-              <a href="#gallery" class="section-more-btn flex items-center gap-2 group cursor-pointer select-none">
+              <router-link to="/gallery" class="section-more-btn flex items-center gap-2 group cursor-pointer select-none">
                 <span class="more-text font-serif tracking-widest text-sm font-bold">More</span>
                 <svg class="more-arrow-icon w-10 h-3.5 transition-transform duration-300 group-hover:translate-x-1.5" viewBox="0 0 100 32" fill="none">
                   <path d="M 8 18 H 86 L 72 6" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-              </a>
+              </router-link>
             </div>
           </div>
 
-          <!-- 4. 开源作品集区域 (对应 #projects 锚点 - 直连后端数据库) -->
+          <!-- 4. 开源作品集区域 (对应 #projects 锚点 - 主页最多展示 2 行即 4 个作品) -->
           <div id="projects" class="scroll-mt-6 flex flex-col gap-3.5">
             <!-- 板块头部 -->
             <div class="flex items-center justify-between mb-1">
@@ -149,12 +164,9 @@
             <div v-if="projectsLoading" class="text-center py-8 text-sm text-(--text-dim)">
               获取作品集中...
             </div>
-            <div v-else-if="projects.length === 0" class="card-base p-8 text-center text-xs text-(--text-dim)">
-              暂无作品数据，请在后台添加～
-            </div>
             <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div 
-                v-for="proj in projects" 
+                v-for="proj in displayProjects.slice(0, 4)" 
                 :key="proj.id" 
                 class="card-base p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-md border border-(--line-divider)"
               >
@@ -191,14 +203,14 @@
               </div>
             </div>
 
-            <!-- 右下角金色 More 操作按钮 -->
+            <!-- 右下角金色 More 操作按钮 (点击跳转至独立开源作品集页面 /projects) -->
             <div class="flex justify-end mt-1">
-              <a href="#projects" class="section-more-btn flex items-center gap-2 group cursor-pointer select-none">
+              <router-link to="/projects" class="section-more-btn flex items-center gap-2 group cursor-pointer select-none">
                 <span class="more-text font-serif tracking-widest text-sm font-bold">More</span>
                 <svg class="more-arrow-icon w-10 h-3.5 transition-transform duration-300 group-hover:translate-x-1.5" viewBox="0 0 100 32" fill="none">
                   <path d="M 8 18 H 86 L 72 6" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-              </a>
+              </router-link>
             </div>
           </div>
 
@@ -209,10 +221,16 @@
 
           <!-- 6. 关于区域锚点 (对应 #about 锚点 - 无需 More 按钮) -->
           <div id="about" class="scroll-mt-6 card-base p-6 border border-(--line-divider)">
-            <h3 class="text-lg font-bold text-(--text-bright) mb-2 flex items-center gap-2">
-              <span class="w-1.5 h-4.5 rounded-full bg-(--primary)"></span>
-              <span>关于本站</span>
-            </h3>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-bold text-(--text-bright) flex items-center gap-2">
+                <span class="w-1.5 h-4.5 rounded-full bg-(--primary)"></span>
+                <span>关于本站</span>
+              </h3>
+              <router-link to="/about" class="text-xs text-(--primary) hover:underline font-semibold flex items-center gap-1">
+                <span>查看博主主页 (About Me)</span>
+                <span>➔</span>
+              </router-link>
+            </div>
             <p class="text-xs text-(--text-normal) leading-relaxed mb-3">
               这是一个由 Vue 3 + TypeScript 构建，深度融合 Firefly（流萤）清新美学设计的个人空间。
               在此记录技术探索、架构思考与日常生活，愿每一段代码都能如夏夜流萤般照亮前行的路。
@@ -248,24 +266,24 @@
         <aside class="sidebar-widgets-column flex flex-col gap-6 w-full">
           <!-- 上部组件群 (随页面自然同步下滑滚动) -->
           <div class="flex flex-col gap-6">
-            <!-- 1. 博主名片卡 (Profile) -->
+            <!-- 1. 博主名片卡 (Profile - 正圆形头像，点击跳转 /about) -->
             <ProfileWidget />
 
-            <!-- 2. 站点公告 (Announcement) -->
+            <!-- 2. 签名卡片 (Signature) -->
             <AnnouncementWidget />
 
             <!-- 3. 音乐播放器 (Music) -->
             <MusicWidget />
           </div>
 
-          <!-- 下部组件群 (下滑到最后 3 个卡片时吸顶固定 - Sticky，保证始终留存最后三张) -->
+          <!-- 下部组件群 (下滑到最后 3 个卡片时吸顶固定 - Sticky) -->
           <div class="flex flex-col gap-6 lg:sticky lg:top-6">
             <!-- 4. 最新动态 (Latest Moments) -->
             <DynamicWidget />
 
             <!-- 5. 站点统计 (Site Stats) -->
             <SiteStatsWidget 
-              :article-count="articles.length || 0" 
+              :article-count="displayArticles.length || 0" 
               :category-count="categoryList.length || 0"
               :tag-count="tagList.length || 0"
               :total-words="calculatedTotalWords" 
@@ -286,6 +304,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 import FireflyBanner from '../components/FireflyBanner.vue'
 import ArticleCard from '../components/ArticleCard.vue'
@@ -299,7 +318,9 @@ import DynamicWidget from '../components/widgets/DynamicWidget.vue'
 import SiteStatsWidget from '../components/widgets/SiteStatsWidget.vue'
 import SiteInfoWidget from '../components/widgets/SiteInfoWidget.vue'
 import { activeSection, isNavScrolling } from '../store/navState'
-import { galleryConfig } from '../config'
+import { galleryAlbumConfig } from '../config/galleryConfig'
+
+const router = useRouter()
 
 const articles = ref<any[]>([])
 const projects = ref<any[]>([])
@@ -308,16 +329,64 @@ const dbCategories = ref<any[]>([])
 const dbTags = ref<any[]>([])
 const loading = ref(true)
 const projectsLoading = ref(true)
-const selectedCategory = ref('')
+
+// 默认预设文章（保证数据库连接或初始状态时始终有美观内容展示）
+const defaultArticles = [
+  {
+    id: 2,
+    title: '现代前端工程化与云端 AI 协同开发实践',
+    summary: '现代前端工程化与云端 AI 协同开发实践 在当前的软件工程实践中，前端开发链路的复杂度呈指数级上升。传统的本地开发环境在应对大型复杂项目时，往往受限于硬件资源的瓶颈。本文将探讨如何利用集成大语言模型的云端工作区...',
+    createTime: '2026-06-18T16:25:12',
+    categoryName: '开发笔记',
+    tags: [{ tagName: '前端' }, { tagName: 'AI' }]
+  },
+  {
+    id: 1,
+    title: 'Hello,World',
+    summary: '这是我的第一篇博客，记录探索技术与生活的开端。',
+    createTime: '2026-06-17T16:25:12',
+    isFeatured: true,
+    categoryName: '文章示例',
+    tags: [{ tagName: '博客' }, { tagName: '启程' }]
+  }
+]
+
+const displayArticles = computed(() => {
+  return articles.value.length > 0 ? articles.value : defaultArticles
+})
+
+// 默认预设作品集
+const defaultProjects = [
+  {
+    id: 1,
+    name: '学习通位置签到',
+    description: '支持学习通位置签到，普通签到，不支持扫码签到\n通过获取cookie，采用伪造ip及机器码的方式完成验证',
+    githubUrl: 'https://github.com/Cakehand-abc/XuexitongSign',
+    downloadUrl: '暂无'
+  }
+]
+
+const displayProjects = computed(() => {
+  return projects.value.length > 0 ? projects.value : defaultProjects
+})
+
+// 相册数据
+const homeAlbums = computed(() => galleryAlbumConfig)
+
+const goToGallery = () => {
+  router.push('/gallery')
+}
 
 const fetchArticles = async () => {
   try {
     const res = await axios.get('/api/articles/list', { params: { current: 1, size: 50 } })
-    if (res.data.code === 200 && res.data.data) {
-      articles.value = res.data.data.records || []
+    if (res.data.code === 200 && res.data.data?.records?.length > 0) {
+      articles.value = res.data.data.records
+    } else {
+      articles.value = defaultArticles
     }
   } catch (err) {
-    console.error('Failed to fetch articles', err)
+    articles.value = defaultArticles
   } finally {
     loading.value = false
   }
@@ -327,11 +396,13 @@ const fetchProjects = async () => {
   projectsLoading.value = true
   try {
     const res = await axios.get('/api/projects/list')
-    if (res.data.code === 200) {
-      projects.value = res.data.data || []
+    if (res.data.code === 200 && Array.isArray(res.data.data) && res.data.data.length > 0) {
+      projects.value = res.data.data
+    } else {
+      projects.value = defaultProjects
     }
   } catch (error) {
-    console.error('获取作品集失败:', error)
+    projects.value = defaultProjects
   } finally {
     projectsLoading.value = false
   }
@@ -340,7 +411,7 @@ const fetchProjects = async () => {
 const fetchMoments = async () => {
   try {
     const res = await axios.get('/api/moments/list')
-    if (res.data.code === 200 && Array.isArray(res.data.data)) {
+    if (res.data.code === 200 && Array.isArray(res.data.data) && res.data.data.length > 0) {
       moments.value = res.data.data
     }
   } catch (error) {
@@ -375,33 +446,20 @@ const displayMoments = computed(() => {
   ]
 })
 
-// 分类列表统计 (优先按数据库文章动态聚合)
+// 分类列表统计
 const categoryList = computed(() => {
   const map = new Map<string, number>()
-  articles.value.forEach(a => {
-    const name = a.categoryName || (a.category && a.category.name)
-    if (name) {
-      map.set(name, (map.get(name) || 0) + 1)
-    }
+  displayArticles.value.forEach(a => {
+    const name = a.categoryName || (a.category && a.category.name) || '开发笔记'
+    map.set(name, (map.get(name) || 0) + 1)
   })
-  dbCategories.value.forEach(c => {
-    if (!map.has(c.name)) {
-      map.set(c.name, 0)
-    }
-  })
-  if (map.size === 0) {
-    return [
-      { name: '系统运维', count: 1 },
-      { name: '开发笔记', count: 1 }
-    ]
-  }
   return Array.from(map.entries()).map(([name, count]) => ({ name, count }))
 })
 
-// 标签列表统计 (优先按数据库文章动态聚合)
+// 标签列表统计
 const tagList = computed(() => {
   const map = new Map<string, number>()
-  articles.value.forEach(a => {
+  displayArticles.value.forEach(a => {
     if (Array.isArray(a.tags)) {
       a.tags.forEach((t: any) => {
         const tagName = t.tagName || t.name || t
@@ -409,38 +467,17 @@ const tagList = computed(() => {
       })
     }
   })
-  dbTags.value.forEach(t => {
-    if (!map.has(t.name)) {
-      map.set(t.name, 0)
-    }
-  })
-  if (map.size === 0) {
-    return [
-      { name: 'Markdown', count: 2 },
-      { name: 'Firefly', count: 2 },
-      { name: '前端工程化', count: 1 }
-    ]
-  }
   return Array.from(map.entries()).map(([name, count]) => ({ name, count }))
-})
-
-// 根据分类过滤文章
-const filteredArticles = computed(() => {
-  if (!selectedCategory.value) return articles.value
-  return articles.value.filter(a => (a.categoryName || (a.category && a.category.name)) === selectedCategory.value)
 })
 
 const calculatedTotalWords = computed(() => {
   let count = 0
-  articles.value.forEach(a => {
+  displayArticles.value.forEach(a => {
     if (a.summary) count += a.summary.length
     if (a.content) count += a.content.length
   })
   return Math.max(16293, count)
 })
-
-// 画廊相册数据
-const galleryImages = galleryConfig
 
 const formatDate = (dateStr?: string) => {
   if (!dateStr) return '2026-08-21'

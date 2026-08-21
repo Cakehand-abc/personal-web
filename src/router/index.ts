@@ -16,6 +16,31 @@ const router = createRouter({
       component: () => import('../views/Home.vue')
     },
     {
+      path: '/articles',
+      name: 'articles',
+      component: () => import('../views/ArticleList.vue')
+    },
+    {
+      path: '/essays',
+      name: 'essays',
+      component: () => import('../views/MomentList.vue')
+    },
+    {
+      path: '/gallery',
+      name: 'gallery',
+      component: () => import('../views/Gallery.vue')
+    },
+    {
+      path: '/projects',
+      name: 'projects',
+      component: () => import('../views/ProjectList.vue')
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: () => import('../views/About.vue')
+    },
+    {
       path: '/oauth2/redirect',
       name: 'oauth2Redirect',
       component: () => import('../views/OAuth2Redirect.vue')
@@ -71,7 +96,6 @@ const router = createRouter({
         }
       ]
     },
-    // 将 /home 重定向到 / 以避免用户直接访问 /home 绕过拦截
     {
       path: '/home',
       redirect: '/'

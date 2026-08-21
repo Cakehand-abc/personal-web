@@ -14,7 +14,7 @@
           v-for="nav in navList" 
           :key="nav.path" 
           class="l-nav__item"
-          :class="{ 'is-active': activeNavPath === nav.path }"
+          :class="{ 'is-active': activeNavPath === nav.path || activeNavPath === nav.target || activeNavPath === '/' + nav.name.toLowerCase() }"
           @click="handleNavClick(nav)"
         >
           <div class="l-nav__link">
